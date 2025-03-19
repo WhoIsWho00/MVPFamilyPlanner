@@ -25,7 +25,7 @@ public class UserConverter {
     public UserResponseDto createDtoFromUser(User user) {
         return new UserResponseDto(
                 user.getId(),
-                user.getName(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getRole()
         );
@@ -33,22 +33,25 @@ public class UserConverter {
 
     public User createUserFromDto(RegistrationRequest request) {
         User newUser = new User();
-        newUser.setName(request.getName());
+        newUser.setUsername(request.getName());
         newUser.setEmail(request.getEmail());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         newUser.setPassword(hashedPassword);
 
+
         Optional<Role> defaultRole = roleRepository.findByRoleName("USER");
 
-        if(defaultRole.isPresent())
-        {
-            newUser.setRole(defaultRole.get());
-            return newUser;
-        }
-        else throw (new NotFoundException("Role not found"));
 
+        if(defaultRole.isEmpty()) {
+            Role userRole = new Role("USER");
+            defaultRole = Optional.of(roleRepository.save(userRole));
+        }
+
+
+        newUser.setRole(defaultRole.get());
+        return newUser;
     }
 
 }
