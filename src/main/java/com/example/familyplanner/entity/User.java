@@ -1,9 +1,7 @@
 package com.example.familyplanner.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -19,7 +17,7 @@ public class User {
     private UUID id;
 
     @Column (nullable = false)
-    private String name;
+    private String username;
 
     @Column (nullable = false, unique = true)
 
@@ -30,7 +28,7 @@ public class User {
     private String password;
 
     @ManyToOne
-    @JoinColumn (name = "role")
+    @JoinColumn (name = "role_id")
     private Role role;
 
 }
