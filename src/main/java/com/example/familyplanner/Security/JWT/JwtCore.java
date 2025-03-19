@@ -24,12 +24,12 @@ public class JwtCore {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String username) {
+    public String createToken(String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtLifeTime);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

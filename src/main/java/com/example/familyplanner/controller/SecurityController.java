@@ -22,11 +22,11 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class SecurityController {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
-    private RegisterUserService registerUserService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
+    private final RegisterUserService registerUserService;
 
     @Autowired
     public SecurityController(UserRepository userRepository, PasswordEncoder passwordEncoder,
@@ -41,19 +41,19 @@ public class SecurityController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtCore.createToken(authentication.getName());
+
+        String jwt = jwtCore.createToken(loginRequest.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
-        response.put("username", authentication.getName());
+        response.put("email", loginRequest.getEmail());
 
         return ResponseEntity.ok(response);
     }
@@ -64,7 +64,7 @@ public class SecurityController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", newUser);
-        response.put("message", "User succsessfully created");
+        response.put("message", "Користувача успішно створено");
 
         return ResponseEntity.ok(response);
     }
