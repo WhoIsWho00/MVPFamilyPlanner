@@ -32,11 +32,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtCore.validateToken(jwt)) {
-
                 String email = jwtCore.getUserNameFromJwt(jwt);
-
-
                 UserDetails userDetails = userService.loadUserByUsername(email);
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -44,7 +42,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("Не вдалося встановити автентифікацію користувача: {}", e);
+            logger.error("Failed to authenticate user: {}", e);
+            // Not passing error details to the client for security
         }
 
         filterChain.doFilter(request, response);

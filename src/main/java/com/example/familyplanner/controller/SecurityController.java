@@ -6,7 +6,9 @@ import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.RegisterUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +42,7 @@ public class SecurityController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
@@ -54,18 +56,20 @@ public class SecurityController {
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("email", loginRequest.getEmail());
+        response.put("message", "Login successful");
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", newUser);
-        response.put("message", "Користувача успішно створено");
+        response.put("message", "User successfully registered");
+        response.put("status", "success");
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

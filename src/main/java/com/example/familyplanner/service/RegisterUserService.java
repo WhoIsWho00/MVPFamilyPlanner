@@ -7,6 +7,7 @@ import com.example.familyplanner.repository.RoleRepository;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.AlreadyExistException;
+import com.example.familyplanner.service.exception.ValidationException;
 import com.example.familyplanner.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,26 @@ public class RegisterUserService {
 
 
     public UserResponseDto createNewUser(RegistrationRequest request) {
-        if(validation.userExists(request.getEmail())){
-            throw new AlreadyExistException("User with " + request.getEmail() + " already exists");
+        if (validation.userExists(request.getEmail())) {
+            throw new AlreadyExistException("User with email " + request.getEmail() + " already exists");
         }
 
-        User newUser = converter.createUserFromDto(request); //Хеширование пароля происходит внутри конвертера, на этапе приёма request
+        // Perform additional validation if needed
+        if (!isValidPassword(request.getPassword())) {
+            throw new ValidationException("Password does not meet security requirements");
+        }
+
+        User newUser = converter.createUserFromDto(request);
         User savedUser = userRepository.save(newUser);
 
         return converter.createDtoFromUser(savedUser);
+    }
+
+    private boolean isValidPassword(String password) {
+        return password != null &&
+                password.length() >= 8 &&
+                password.length() <= 25 &&
+                password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
     }
 
 
