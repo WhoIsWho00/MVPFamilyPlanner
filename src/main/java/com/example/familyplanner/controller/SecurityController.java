@@ -6,6 +6,7 @@ import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.RegisterUserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ public class SecurityController {
         this.registerUserService = registerUserService;
     }
 
+    @Operation(summary = "authorize user", description = "Authorize user in system and give him unique JWT token")
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -61,6 +63,7 @@ public class SecurityController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "register user", description = "register user in system to have an access to get a JWT token later")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
