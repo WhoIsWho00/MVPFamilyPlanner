@@ -17,4 +17,5 @@ public class ValidationService {
         Optional<User> existUser = userRepository.findByEmail(email);
         return existUser.isPresent();
     }
+
 }

@@ -13,8 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegistrationRequest {
         @NotBlank
-        @Pattern(regexp = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).*$" )
+        @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Username must not contain any special characters")
+        //^ — начало строки
+        //[a-zA-Z0-9]+ — только латинские буквы и цифры, не менее одного символа
+        //$ — конец строки
         @Size(min = 2, message = "Username should have at least 2 symbols")
+        @Size(max = 15, message = "Username can't be more than 15 symbols")
         private String name;
 
         @Email(message = "invalid Email format")
