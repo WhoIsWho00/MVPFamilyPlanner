@@ -17,9 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FindUserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserConverter converter;
-    private final ValidationService validation;
+
 
     public List<UserResponseDto> findAll(){
         return userRepository.findAll().stream()

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class RegisterUserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserConverter converter;
     private final ValidationService validation;
 
