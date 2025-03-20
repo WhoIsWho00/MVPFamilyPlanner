@@ -6,7 +6,9 @@ import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.RegisterUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +24,11 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class SecurityController {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
-    private RegisterUserService registerUserService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
+    private final RegisterUserService registerUserService;
 
     @Autowired
     public SecurityController(UserRepository userRepository, PasswordEncoder passwordEncoder,
@@ -40,32 +42,34 @@ public class SecurityController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtCore.createToken(authentication.getName());
+
+        String jwt = jwtCore.createToken(loginRequest.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
-        response.put("username", authentication.getName());
+        response.put("email", loginRequest.getEmail());
+        response.put("message", "Login successful");
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", newUser);
-        response.put("message", "User succsessfully created");
+        response.put("message", "User successfully registered");
+        response.put("status", "success");
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

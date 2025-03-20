@@ -5,6 +5,7 @@ import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
     private final RegisterUserService registerService;
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> createNewUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<UserResponseDto> createNewUser(@Valid @RequestBody RegistrationRequest request) {
         return new ResponseEntity<>(registerService.createNewUser(request), HttpStatus.CREATED);
     }
 
