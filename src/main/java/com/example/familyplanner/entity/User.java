@@ -31,4 +31,10 @@ public class User {
     @JoinColumn (name = "role_id")
     private Role role;
 
+    @Column(nullable = true)
+    private UUID familyID;
+
+    @Column(nullable = true)
+    private UUID inviteCode;
+
 }
