@@ -7,6 +7,8 @@ import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "API for user authentication and registration")
 public class SecurityController {
 
     private final UserRepository userRepository;
@@ -42,8 +45,19 @@ public class SecurityController {
         this.registerUserService = registerUserService;
     }
 
-    @Operation(summary = "authorize user", description = "Authorize user in system and give him unique JWT token")
-    @PostMapping("/sign-in")
+
+    @Operation(
+            summary = "Authenticate user",
+            description = "Authenticates user in the system and issues a unique JWT token for further authentication",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful login. JWT token returned in response"),
+                    @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request (missing email or password)"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PostMapping("/signin")
+  
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
@@ -63,8 +77,18 @@ public class SecurityController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "register user", description = "register user in system to have an access to get a JWT token later")
-    @PostMapping("/sign-up")
+
+    @Operation(
+            summary = "Register new user",
+            description = "Registers a new user in the system for subsequent JWT token acquisition",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "User successfully registered"),
+                    @ApiResponse(responseCode = "400", description = "Validation error or user with this email already exists"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PostMapping("/signup")
+
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
