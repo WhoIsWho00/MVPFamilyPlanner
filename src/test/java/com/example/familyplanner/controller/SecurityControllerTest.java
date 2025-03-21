@@ -87,7 +87,7 @@ public class SecurityControllerTest {
         validLoginRequest = new LoginRequest("test@example.com", "Test!123");
 
         validRegistrationRequest = new RegistrationRequest();
-        validRegistrationRequest.setName("Test User");
+        validRegistrationRequest.setName("TestUser");
         validRegistrationRequest.setEmail("test@example.com");
         validRegistrationRequest.setPassword("Test!123");
 
