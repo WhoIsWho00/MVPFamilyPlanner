@@ -56,7 +56,7 @@ public class SecurityController {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @PostMapping("/signin")
+    @PostMapping("/sign-in")
   
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -87,7 +87,7 @@ public class SecurityController {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
 
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
