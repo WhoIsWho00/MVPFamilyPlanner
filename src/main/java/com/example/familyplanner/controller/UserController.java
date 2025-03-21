@@ -41,23 +41,23 @@ public class UserController {
                     responses = {   @ApiResponse(responseCode = "200", description = "All users found"),
                                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                                     @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
-    @GetMapping("/all")
+    @GetMapping
     public List<UserResponseDto> findAll() {
         return findService.findAll();
     }
 
 
     //хз зачем он нужен...
-    @Operation(
-            summary = "Find all users with all information",
-                description = "Find and return in response all users with all sort of information including confidential data",
-                    responses = {   @ApiResponse(responseCode = "200", description = "All users with full information found"),
-                                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                                    @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
-    @GetMapping("/full")
-    public List<User> findAllFullDetails() {
-        return findService.findAllFullDetails();
-    }
+//    @Operation(
+//            summary = "Find all users with all information",
+//                description = "Find and return in response all users with all sort of information including confidential data",
+//                    responses = {   @ApiResponse(responseCode = "200", description = "All users with full information found"),
+//                                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//                                    @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
+//    @GetMapping("/full")
+//    public List<User> findAllFullDetails() {
+//        return findService.findAllFullDetails();
+//    }
 
     @Operation(
             summary = "Find user by email",
@@ -67,8 +67,8 @@ public class UserController {
                                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                                     @ApiResponse(responseCode = "404", description = "User not found"),
                                     @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
-    @GetMapping("/email")
-    public UserResponseDto findUserByEmail(@RequestParam String email) {
+    @GetMapping("/by-email/{email}")
+    public UserResponseDto findUserByEmail(@PathVariable String email) {
         return findService.findUserByEmail(email);
     }
 }

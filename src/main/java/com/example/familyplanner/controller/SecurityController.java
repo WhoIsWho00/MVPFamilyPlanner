@@ -43,7 +43,7 @@ public class SecurityController {
     }
 
     @Operation(summary = "authorize user", description = "Authorize user in system and give him unique JWT token")
-    @PostMapping("/signin")
+    @PostMapping("/sign-in")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
@@ -64,7 +64,7 @@ public class SecurityController {
     }
 
     @Operation(summary = "register user", description = "register user in system to have an access to get a JWT token later")
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
