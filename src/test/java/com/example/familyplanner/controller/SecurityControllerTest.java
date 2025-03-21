@@ -112,7 +112,7 @@ public class SecurityControllerTest {
                 .thenReturn(mock(Authentication.class));
 
 
-        mockMvc.perform(post("/api/auth/signin")
+        mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validLoginRequest)))
                 .andDo(print())
@@ -135,7 +135,7 @@ public class SecurityControllerTest {
         LoginRequest invalidRequest = new LoginRequest("test@example.com", "WrongPassword");
 
 
-        mockMvc.perform(post("/api/auth/signin")
+        mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
@@ -148,7 +148,7 @@ public class SecurityControllerTest {
         when(registerUserService.createNewUser(any(RegistrationRequest.class))).thenReturn(userResponseDto);
 
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRegistrationRequest)))
                 .andDo(print())
@@ -170,7 +170,7 @@ public class SecurityControllerTest {
                 .thenThrow(new AlreadyExistException("User with email test@example.com already exists"));
 
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRegistrationRequest)))
                 .andDo(print())
@@ -185,7 +185,7 @@ public class SecurityControllerTest {
                 .thenThrow(new ValidationException("Password does not meet security requirements"));
 
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRegistrationRequest)))
                 .andDo(print())
@@ -197,12 +197,12 @@ public class SecurityControllerTest {
     void registerUser_WithEmptyName_ReturnsBadRequest() throws Exception {
 
         RegistrationRequest invalidRequest = new RegistrationRequest();
-        invalidRequest.setName("");
+        invalidRequest.setName("a");
         invalidRequest.setEmail("test@example.com");
         invalidRequest.setPassword("Test!123");
 
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
@@ -218,7 +218,7 @@ public class SecurityControllerTest {
         invalidRequest.setPassword("Test!123");
 
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
