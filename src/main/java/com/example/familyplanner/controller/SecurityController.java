@@ -45,6 +45,7 @@ public class SecurityController {
         this.registerUserService = registerUserService;
     }
 
+
     @Operation(
             summary = "Authenticate user",
             description = "Authenticates user in the system and issues a unique JWT token for further authentication",
@@ -56,6 +57,7 @@ public class SecurityController {
             }
     )
     @PostMapping("/signin")
+  
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
@@ -75,6 +77,7 @@ public class SecurityController {
         return ResponseEntity.ok(response);
     }
 
+
     @Operation(
             summary = "Register new user",
             description = "Registers a new user in the system for subsequent JWT token acquisition",
@@ -85,6 +88,7 @@ public class SecurityController {
             }
     )
     @PostMapping("/signup")
+
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
