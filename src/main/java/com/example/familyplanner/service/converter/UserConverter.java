@@ -25,18 +25,20 @@ public class UserConverter {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getAvatarId(),
+                user.getAge()
         );
     }
 
     public User createUserFromDto(RegistrationRequest request) {
         User newUser = new User();
-        newUser.setUsername(request.getName());
+        newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setAvatarId(request.getAvatarId());
+        newUser.setAge(request.getAge());
 
-
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
-        newUser.setPassword(hashedPassword);
 
         Optional<Role> defaultRole = roleRepository.findByRoleName("USER");
 

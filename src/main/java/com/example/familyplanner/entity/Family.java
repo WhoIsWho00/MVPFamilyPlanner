@@ -26,6 +26,6 @@ public class Family {
     private UUID adminUserId;
 
     @NotNull
-    @Column(name = "invite_ code" ,nullable = false, unique = true)
+    @Column(name = "invite_code" ,nullable = false, unique = true)
     private UUID inviteCode;
 }
