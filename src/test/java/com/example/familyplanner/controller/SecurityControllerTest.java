@@ -6,6 +6,7 @@ import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.entity.Role;
 import com.example.familyplanner.repository.UserRepository;
+import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.ValidationException;
@@ -54,6 +55,9 @@ public class SecurityControllerTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private FindUserService findUserService;
+
     private SecurityController securityController;
 
     private LoginRequest validLoginRequest;
@@ -72,7 +76,8 @@ public class SecurityControllerTest {
                 passwordEncoder,
                 authenticationManager,
                 jwtCore,
-                registerUserService
+                registerUserService,
+                findUserService
         );
 
 
@@ -87,7 +92,7 @@ public class SecurityControllerTest {
         validLoginRequest = new LoginRequest("test@example.com", "Test!123");
 
         validRegistrationRequest = new RegistrationRequest();
-        validRegistrationRequest.setName("TestUser");
+        validRegistrationRequest.setUsername("TestUser");
         validRegistrationRequest.setEmail("test@example.com");
         validRegistrationRequest.setPassword("Test!123");
 
@@ -197,7 +202,7 @@ public class SecurityControllerTest {
     void registerUser_WithEmptyName_ReturnsBadRequest() throws Exception {
 
         RegistrationRequest invalidRequest = new RegistrationRequest();
-        invalidRequest.setName("a");
+        invalidRequest.setUsername("a");
         invalidRequest.setEmail("test@example.com");
         invalidRequest.setPassword("Test!123");
 
@@ -213,7 +218,7 @@ public class SecurityControllerTest {
     void registerUser_WithInvalidEmailFormat_ReturnsBadRequest() throws Exception {
 
         RegistrationRequest invalidRequest = new RegistrationRequest();
-        invalidRequest.setName("Test User");
+        invalidRequest.setUsername("Test User");
         invalidRequest.setEmail("not-an-email");
         invalidRequest.setPassword("Test!123");
 

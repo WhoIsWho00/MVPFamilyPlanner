@@ -77,7 +77,7 @@ public class UserControllerTest {
         userResponseDto2.setRole(role);
 
         validRegistrationRequest = new RegistrationRequest();
-        validRegistrationRequest.setName("NewUser");
+        validRegistrationRequest.setUsername("NewUser");
         validRegistrationRequest.setEmail("newuser@example.com");
         validRegistrationRequest.setPassword("Password!123");
     }
@@ -150,9 +150,9 @@ public class UserControllerTest {
     @Test
     void createNewUser_shouldReturnBadRequest_whenDataIsInvalid() throws Exception {
         RegistrationRequest invalidRequest = new RegistrationRequest();
-        invalidRequest.setName(""); // Невалидное имя
-        invalidRequest.setEmail("invalid-email"); // Невалидный email
-        invalidRequest.setPassword("short"); // Слишком короткий пароль без спецсимвола
+        invalidRequest.setUsername("");
+        invalidRequest.setEmail("invalid-email");
+        invalidRequest.setPassword("short");
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
