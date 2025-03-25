@@ -5,6 +5,7 @@ import com.example.familyplanner.dto.LoginRequest;
 import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.repository.UserRepository;
+import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,16 +34,21 @@ public class SecurityController {
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
+    private final FindUserService findUserService;
 
     @Autowired
-    public SecurityController(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                              AuthenticationManager authenticationManager, JwtCore jwtCore,
-                              RegisterUserService registerUserService) {
+    public SecurityController(UserRepository userRepository,
+                              PasswordEncoder passwordEncoder,
+                              AuthenticationManager authenticationManager,
+                              JwtCore jwtCore,
+                              RegisterUserService registerUserService,
+                              FindUserService findUserService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtCore = jwtCore;
         this.registerUserService = registerUserService;
+        this.findUserService = findUserService;
     }
 
 
@@ -64,16 +70,18 @@ public class SecurityController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(authToken);
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // Generate JWT token for the new user
         String jwt = jwtCore.createToken(loginRequest.getEmail());
+
+        UserResponseDto userDto = findUserService.findUserByEmail(loginRequest.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
+        response.put("user", userDto);
         response.put("email", loginRequest.getEmail());
         response.put("message", "Login successful");
-
         return ResponseEntity.ok(response);
     }
 
@@ -92,8 +100,12 @@ public class SecurityController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
+        // Generate JWT token for the new user
+        String jwt = jwtCore.createToken(request.getEmail());
+
         Map<String, Object> response = new HashMap<>();
         response.put("user", newUser);
+        response.put("token", jwt);
         response.put("message", "User successfully registered");
         response.put("status", "success");
 
