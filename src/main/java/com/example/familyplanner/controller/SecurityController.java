@@ -9,6 +9,8 @@ import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,8 +33,8 @@ import java.util.Optional;
 @Tag(name = "Authentication", description = "API for user authentication and registration")
 public class SecurityController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+//    private final UserRepository userRepository;
+//    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -45,8 +47,8 @@ public class SecurityController {
                               JwtCore jwtCore,
                               RegisterUserService registerUserService,
                               FindUserService findUserService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+//        this.userRepository = userRepository;
+//        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtCore = jwtCore;
         this.registerUserService = registerUserService;
@@ -56,12 +58,59 @@ public class SecurityController {
 
     @Operation(
             summary = "Authenticate user",
-            description = "Authenticates user in the system and issues a unique JWT token for further authentication",
+            description = "Authenticates user and returns JWT token along with user info",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successful login. JWT token returned in response"),
-                    @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-                    @ApiResponse(responseCode = "400", description = "Invalid request (missing email or password)"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "200", description = "Successful login",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "token": "jwt-token-string",
+                                              "user": {
+                                                "id": 1,
+                                                "username": "john_doe",
+                                                "email": "john@example.com"
+                                              },
+                                              "email": "john@example.com",
+                                              "message": "Login successful"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request (missing email or password)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": "Missing email or password.",
+                                              "path": "/api/auth/sign-in"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 401,
+                                              "error": "Unauthorized",
+                                              "message": "Invalid email or password.",
+                                              "path": "/api/auth/sign-in"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/sign-in"
+                                            }
+                                            """
+                            )))
             }
     )
     @PostMapping("/sign-in")
@@ -90,11 +139,62 @@ public class SecurityController {
 
     @Operation(
             summary = "Register new user",
-            description = "Registers a new user in the system for subsequent JWT token acquisition",
+            description = "Registers a new user and returns JWT token along with user info",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "User successfully registered"),
-                    @ApiResponse(responseCode = "400", description = "Validation error or user with this email already exists"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "201", description = "User successfully registered",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "user": {
+                                                "id": 2,
+                                                "username": "new_user",
+                                                "email": "new_user@example.com"
+                                              },
+                                              "token": "jwt-token-string",
+                                              "message": "User successfully registered",
+                                              "status": "success"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "400", description = "User already exists or validation failed",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": {
+                                                "email": "User with this email already exists or email is invalid.",
+                                                "username": "Username already taken or invalid."
+                                              },
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (access denied)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 403,
+                                              "error": "Forbidden",
+                                              "message": "Access denied. Insufficient permissions.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            )))
             }
     )
     @PostMapping("/sign-up")
