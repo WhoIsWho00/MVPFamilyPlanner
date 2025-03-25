@@ -1,4 +1,4 @@
-package com.example.familyplanner.controller;
+
 
 import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UpdateProfileRequest;
@@ -51,18 +51,6 @@ public class UserController {
     }
 
 
-    //хз зачем он нужен...
-//    @Operation(
-//            summary = "Find all users with all information",
-//                description = "Find and return in response all users with all sort of information including confidential data",
-//                    responses = {   @ApiResponse(responseCode = "200", description = "All users with full information found"),
-//                                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-//                                    @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
-//    @GetMapping("/full")
-//    public List<User> findAllFullDetails() {
-//        return findService.findAllFullDetails();
-//    }
-
     @Operation(
             summary = "Find user by email",
                 description = "Find user that already exist in DataBase via his unique and personal email",
@@ -102,3 +90,4 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 }
+
