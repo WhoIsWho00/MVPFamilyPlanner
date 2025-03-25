@@ -1,4 +1,4 @@
-
+package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UpdateProfileRequest;
