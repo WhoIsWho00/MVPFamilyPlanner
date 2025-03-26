@@ -1,4 +1,4 @@
-package com.example.familyplanner.dto;
+package com.example.familyplanner.dto.responses;
 
 import com.example.familyplanner.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -15,47 +15,31 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordResetService {
 
-    private final UserRepository userRepository;
-    private final PasswordResetTokenRepository tokenRepository;
+    private final UserRepository userRepo;
+    private final PasswordResetTokenRepository tokenRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public String createPasswordResetToken(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User with that email not found"));
-
-
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
-
+    public void createResetToken(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
         String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = PasswordResetToken.builder()
-                .token(token)
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusMinutes(30)) // 30 minutes expiry
-                .used(false)
-                .build();
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
+        resetToken.setUser(user);
+        tokenRepo.save(resetToken);
 
-        tokenRepository.save(resetToken);
-
-        return token;
     }
 
     public void resetPassword(String token, String newPassword) {
-        PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid password reset token"));
-
-        if (resetToken.isUsed()) {
-            throw new IllegalStateException("This token has already been used");
+        PasswordResetToken prt = tokenRepo.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+        if (prt.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
         }
-
-        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("This token has expired");
-        }
-
-        User user = resetToken.getUser();
+        User user = prt.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        resetToken.setUsed(true);
-        tokenRepository.save(resetToken);
+        userRepo.save(user);
+        tokenRepo.delete(prt);
     }
 }
