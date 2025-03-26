@@ -7,6 +7,7 @@ import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.Role;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.FindUserService;
+import com.example.familyplanner.service.PasswordResetService;
 import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.ValidationException;
@@ -24,7 +25,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.UUID;
 
@@ -58,6 +62,9 @@ public class SecurityControllerTest {
     @Mock
     private FindUserService findUserService;
 
+    @Mock
+    private PasswordResetService passwordResetService;
+
     private SecurityController securityController;
 
     private LoginRequest validLoginRequest;
@@ -67,25 +74,20 @@ public class SecurityControllerTest {
 
     @BeforeEach
     void setUp() {
-
         objectMapper = new ObjectMapper();
 
-
         securityController = new SecurityController(
-                userRepository,
-                passwordEncoder,
                 authenticationManager,
                 jwtCore,
                 registerUserService,
-                findUserService
+                findUserService,
+                passwordResetService
         );
-
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(securityController)
-                .setControllerAdvice(new ExceptionHandler())
+                .setControllerAdvice(new TestExceptionHandler())
                 .build();
-
 
         testUserId = UUID.randomUUID();
 
@@ -105,17 +107,13 @@ public class SecurityControllerTest {
         userResponseDto.setUsername("Test User");
         userResponseDto.setEmail("test@example.com");
         userResponseDto.setRole(userRole);
-
-
     }
 
     @Test
     void authenticateUser_WithValidCredentials_ReturnsToken() throws Exception {
-
         when(jwtCore.createToken("test@example.com")).thenReturn("test.jwt.token");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mock(Authentication.class));
-
 
         mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,19 +124,16 @@ public class SecurityControllerTest {
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.message").value("Login successful"));
 
-
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtCore).createToken("test@example.com");
     }
 
     @Test
     void authenticateUser_WithInvalidCredentials_ReturnsUnauthorized() throws Exception {
-
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Bad credentials"));
 
         LoginRequest invalidRequest = new LoginRequest("test@example.com", "WrongPassword");
-
 
         mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,9 +144,7 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithValidData_ReturnsCreatedUser() throws Exception {
-
         when(registerUserService.createNewUser(any(RegistrationRequest.class))).thenReturn(userResponseDto);
-
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -164,16 +157,13 @@ public class SecurityControllerTest {
                 .andExpect(jsonPath("$.message").value("User successfully registered"))
                 .andExpect(jsonPath("$.status").value("success"));
 
-
         verify(registerUserService).createNewUser(any(RegistrationRequest.class));
     }
 
     @Test
     void registerUser_WithExistingEmail_ReturnsBadRequest() throws Exception {
-
         when(registerUserService.createNewUser(any(RegistrationRequest.class)))
                 .thenThrow(new AlreadyExistException("User with email test@example.com already exists"));
-
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -185,10 +175,8 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithInvalidPassword_ReturnsBadRequest() throws Exception {
-
         when(registerUserService.createNewUser(any(RegistrationRequest.class)))
                 .thenThrow(new ValidationException("Password does not meet security requirements"));
-
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -200,12 +188,10 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithEmptyName_ReturnsBadRequest() throws Exception {
-
         RegistrationRequest invalidRequest = new RegistrationRequest();
         invalidRequest.setUsername("a");
         invalidRequest.setEmail("test@example.com");
         invalidRequest.setPassword("Test!123");
-
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -216,17 +202,40 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithInvalidEmailFormat_ReturnsBadRequest() throws Exception {
-
         RegistrationRequest invalidRequest = new RegistrationRequest();
         invalidRequest.setUsername("Test User");
         invalidRequest.setEmail("not-an-email");
         invalidRequest.setPassword("Test!123");
-
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @ControllerAdvice
+    static class TestExceptionHandler {
+
+        @ExceptionHandler(AlreadyExistException.class)
+        @ResponseBody
+        @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
+        public String handleAlreadyExists(AlreadyExistException ex) {
+            return ex.getMessage();
+        }
+
+        @ExceptionHandler(ValidationException.class)
+        @ResponseBody
+        @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
+        public String handleValidation(ValidationException ex) {
+            return ex.getMessage();
+        }
+
+        @ExceptionHandler(BadCredentialsException.class)
+        @ResponseBody
+        @ResponseStatus(org.springframework.http.HttpStatus.UNAUTHORIZED)
+        public String handleBadCredentials(BadCredentialsException ex) {
+            return ex.getMessage();
+        }
     }
 }
