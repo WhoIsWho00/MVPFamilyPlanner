@@ -1,9 +1,9 @@
-
+package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UpdateProfileRequest;
 import com.example.familyplanner.dto.UserResponseDto;
-import com.example.familyplanner.entity.User;
+
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;

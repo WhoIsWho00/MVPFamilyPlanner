@@ -1,6 +1,7 @@
 package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.RegistrationRequest;
+import com.example.familyplanner.dto.UpdateProfileRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 import com.example.familyplanner.entity.Role;
 import com.example.familyplanner.service.FindUserService;
@@ -16,16 +17,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -159,5 +162,47 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateUserProfile_shouldUpdateUserWhenAuthenticated() throws Exception {
+        // Create a principal for authentication
+        Principal mockPrincipal = mock(Principal.class);
+        when(mockPrincipal.getName()).thenReturn("user1@example.com");
+
+        UpdateProfileRequest updateRequest = new UpdateProfileRequest();
+        updateRequest.setUsername("UpdatedUser");
+        updateRequest.setEmail("updated@example.com");
+        updateRequest.setAvatarId("avatar2");
+        updateRequest.setAge(30);
+
+        when(registerUserService.updateUserProfile(eq("user1@example.com"), any(UpdateProfileRequest.class)))
+                .thenReturn(userResponseDto1);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest))
+                        .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.username").value("User1"))
+                .andExpect(jsonPath("$.email").value("user1@example.com"));
+
+        verify(registerUserService).updateUserProfile(eq("user1@example.com"), any(UpdateProfileRequest.class));
+    }
+
+    @Test
+    void updateUserProfile_shouldReturnUnauthorizedWhenNotAuthenticated() throws Exception {
+        UpdateProfileRequest updateRequest = new UpdateProfileRequest();
+        updateRequest.setUsername("UpdatedUser");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        verify(registerUserService, never()).updateUserProfile(anyString(), any(UpdateProfileRequest.class));
     }
 }
