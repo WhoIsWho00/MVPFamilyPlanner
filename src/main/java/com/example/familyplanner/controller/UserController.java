@@ -1,18 +1,22 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.RegistrationRequest;
-import com.example.familyplanner.dto.UserResponseDto;
-import com.example.familyplanner.entity.User;
+import com.example.familyplanner.dto.requests.RegistrationRequest;
+import com.example.familyplanner.dto.requests.UpdateProfileRequest;
+import com.example.familyplanner.dto.responses.UserResponseDto;
+
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
+import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 //нужны тесты
@@ -23,6 +27,7 @@ public class UserController {
 
     private final FindUserService findService;
     private final RegisterUserService registerService;
+    private final TaskService taskService;
 
     @Operation(
             summary = "Create user",
@@ -48,18 +53,6 @@ public class UserController {
     }
 
 
-    //хз зачем он нужен...
-//    @Operation(
-//            summary = "Find all users with all information",
-//                description = "Find and return in response all users with all sort of information including confidential data",
-//                    responses = {   @ApiResponse(responseCode = "200", description = "All users with full information found"),
-//                                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-//                                    @ApiResponse(responseCode = "500", description = "Iternal Server Error")})
-//    @GetMapping("/full")
-//    public List<User> findAllFullDetails() {
-//        return findService.findAllFullDetails();
-//    }
-
     @Operation(
             summary = "Find user by email",
                 description = "Find user that already exist in DataBase via his unique and personal email",
@@ -72,4 +65,31 @@ public class UserController {
     public UserResponseDto findUserByEmail(@PathVariable String email) {
         return findService.findUserByEmail(email);
     }
+
+    @Operation(
+            summary = "Update user profile",
+            description = "Updates authenticated user's profile information",
+            security = @SecurityRequirement(name = "JWT"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Profile successfully updated"),
+                    @ApiResponse(responseCode = "400", description = "Validation error or email already in use"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "User not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            }
+    )
+    @PutMapping("/profile")
+    public ResponseEntity<UserResponseDto> updateUserProfile(
+            Principal principal,
+            @Valid @RequestBody UpdateProfileRequest request) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String email = principal.getName();
+        UserResponseDto updatedUser = registerService.updateUserProfile(email, request);
+
+        return ResponseEntity.ok(updatedUser);
+    }
 }
+

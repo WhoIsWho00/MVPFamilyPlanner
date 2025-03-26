@@ -33,8 +33,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Swagger UI access
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        // API endpoints
+                        .requestMatchers("/api/auth/sign-up").permitAll()
+                        .requestMatchers("/api/auth/sign-in").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
+                        // tasks endpoint
+                        .requestMatchers("/api/tasks/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -57,7 +66,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173" ));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173" ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

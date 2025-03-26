@@ -37,4 +37,10 @@ public class User {
     @Column(nullable = true)
     private UUID inviteCode;
 
+    @Column(name = "avatar_id")
+    private String avatarId;
+
+    @Column(name = "age")
+    private Integer age;
+
 }

@@ -1,5 +1,6 @@
 package com.example.familyplanner.dto;
 
+import com.example.familyplanner.dto.requests.RegistrationRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class RegistrationRequestTest {
 
     private static Validator validator;
@@ -21,28 +23,31 @@ class RegistrationRequestTest {
 
     @Test
     void testValidRegistrationRequest() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoe", "john@example.com", "Password@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoe");
+        request.setEmail("john@example.com");
+        request.setPassword("Password@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-        assertTrue(violations.isEmpty()); //violations.isEmpty() - проверяет, что ни одна из анотаций @NotBlank/@Email...
-                                          // в классе RegistrationRequest не прошла, что значит об успешном создании объекта
+        assertTrue(violations.isEmpty());
     }
 
     @Test
     void testInvalidUsernameSpecialChars() {
-        RegistrationRequest request = new RegistrationRequest("John*Doe", "john@example.com", "Password@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("John*Doe");
+        request.setEmail("john@example.com");
+        request.setPassword("Password@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username must not contain any special characters"));
     }
 
-// validator.validate(request) — возвращает список нарушений.
-// assertEquals(1, violations.size()) — ожидаем ровно одно нарушение.
-// assertTrue(violations.iterator().next().getMessage().contains("Username must not contain any special characters")) -
-// Проверяем, что сообщение об ошибке содержит ожидаемый текст.
-
     @Test
     void testInvalidUsernameTooShort() {
-        RegistrationRequest request = new RegistrationRequest("J", "john@example.com", "Password@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("J");
+        request.setEmail("john@example.com");
+        request.setPassword("Password@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username should have at least 2 symbols"));
@@ -50,7 +55,10 @@ class RegistrationRequestTest {
 
     @Test
     void testInvalidUsernameTooLong() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoeJohnDoeJohn", "john@example.com", "Password@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoeJohnDoeJohn");
+        request.setEmail("john@example.com");
+        request.setPassword("Password@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username can't be more than 15 symbols"));
@@ -58,7 +66,10 @@ class RegistrationRequestTest {
 
     @Test
     void testInvalidEmailFormat() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoe", "invalid-email", "Password@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoe");
+        request.setEmail("invalid-email");
+        request.setPassword("Password@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("invalid Email format"));
@@ -66,7 +77,10 @@ class RegistrationRequestTest {
 
     @Test
     void testInvalidPasswordNoSpecialChar() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoe", "john@example.com", "Password1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoe");
+        request.setEmail("john@example.com");
+        request.setPassword("Password1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Password must contain at least one special character"));
@@ -74,7 +88,10 @@ class RegistrationRequestTest {
 
     @Test
     void testInvalidPasswordTooShort() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoe", "john@example.com", "P@1");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoe");
+        request.setEmail("john@example.com");
+        request.setPassword("P@1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Password should have at least 8 symbols"));
@@ -82,10 +99,14 @@ class RegistrationRequestTest {
 
     @Test
     void testInvalidPasswordTooLong() {
-        RegistrationRequest request = new RegistrationRequest("JohnDoe", "john@example.com", "P@sswordThatIsWayTooLong1234567");
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("JohnDoe");
+        request.setEmail("john@example.com");
+        request.setPassword("P@sswordThatIsWayTooLong1234567");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Password cant be bigger than 25 symbols"));
     }
+
 
 }
