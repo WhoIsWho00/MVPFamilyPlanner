@@ -1,5 +1,6 @@
 package com.example.familyplanner.dto;
 
+import com.example.familyplanner.dto.requests.RegistrationRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

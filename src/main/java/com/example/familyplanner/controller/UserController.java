@@ -1,9 +1,8 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.RegistrationRequest;
-import com.example.familyplanner.dto.TaskRequest;
-import com.example.familyplanner.dto.UpdateProfileRequest;
-import com.example.familyplanner.dto.UserResponseDto;
+import com.example.familyplanner.dto.requests.RegistrationRequest;
+import com.example.familyplanner.dto.requests.UpdateProfileRequest;
+import com.example.familyplanner.dto.responses.UserResponseDto;
 
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
@@ -15,7 +14,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;

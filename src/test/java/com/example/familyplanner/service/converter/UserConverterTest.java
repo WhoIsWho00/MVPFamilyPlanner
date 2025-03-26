@@ -1,7 +1,7 @@
 package com.example.familyplanner.service.converter;
 
-import com.example.familyplanner.dto.RegistrationRequest;
-import com.example.familyplanner.dto.UserResponseDto;
+import com.example.familyplanner.dto.requests.RegistrationRequest;
+import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.Role;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.RoleRepository;

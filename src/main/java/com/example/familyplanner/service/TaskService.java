@@ -1,7 +1,7 @@
 package com.example.familyplanner.service;
 
-import com.example.familyplanner.dto.TaskRequest;
-import com.example.familyplanner.dto.TaskResponseDto;
+import com.example.familyplanner.dto.requests.TaskRequest;
+import com.example.familyplanner.dto.responses.TaskResponseDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.TaskRepository;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.example.familyplanner.dto;
+package com.example.familyplanner.dto.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

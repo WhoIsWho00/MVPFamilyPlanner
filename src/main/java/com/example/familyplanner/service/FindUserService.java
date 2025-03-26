@@ -1,12 +1,10 @@
 package com.example.familyplanner.service;
 
-import com.example.familyplanner.dto.UserResponseDto;
+import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.User;
-import com.example.familyplanner.repository.RoleRepository;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.NotFoundException;
-import com.example.familyplanner.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

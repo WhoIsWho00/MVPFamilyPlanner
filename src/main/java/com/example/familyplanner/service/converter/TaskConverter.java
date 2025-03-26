@@ -1,6 +1,6 @@
 package com.example.familyplanner.service.converter;
 
-import com.example.familyplanner.dto.TaskResponseDto;
+import com.example.familyplanner.dto.responses.TaskResponseDto;
 import com.example.familyplanner.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
