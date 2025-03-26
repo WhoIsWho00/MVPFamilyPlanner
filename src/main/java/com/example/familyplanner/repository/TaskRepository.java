@@ -14,16 +14,12 @@ import java.util.UUID;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, UUID> {
 
-    // Find by assigned user with pagination
     Page<Task> findByAssignedTo(User user, Pageable pageable);
 
-    // Find by family ID with pagination
     Page<Task> findByFamilyId(UUID familyId, Pageable pageable);
 
-    // Find by created user with pagination
     Page<Task> findByCreatedBy(User user, Pageable pageable);
 
-    // Custom query for filtered search with pagination
     @Query("SELECT t FROM Task t WHERE " +
             "(:familyId IS NULL OR t.familyId = :familyId) AND " +
             "(:completed IS NULL OR t.completed = :completed) AND " +

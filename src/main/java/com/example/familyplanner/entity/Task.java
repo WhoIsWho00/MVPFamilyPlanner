@@ -22,7 +22,7 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 300)
     private String description;
 
     @Column(name = "due_date")

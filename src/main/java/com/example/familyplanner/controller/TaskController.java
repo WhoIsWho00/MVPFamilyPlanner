@@ -1,19 +1,27 @@
 package com.example.familyplanner.controller;
 
+import com.example.familyplanner.dto.TaskRequest;
 import com.example.familyplanner.dto.TaskResponseDto;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -72,4 +80,87 @@ public class TaskController {
         TaskResponseDto task = taskService.getTaskById(id);
         return ResponseEntity.ok(task);
     }
+
+    @Operation(
+            summary = "Create a new task for the authenticated user",
+            description = "Creates a new task and associates it with the currently authenticated user. The task will be saved to the database.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Task successfully created",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "task": {
+                                                "id": 2,
+                                                "title": "new_task",
+                                              },
+                                              "message": "Task successfully created",
+                                              "status": "success"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "400", description = "Task validation failed",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": {
+                                              "title": "title is required"
+                                              },
+                                              "path": "/api/tasks/"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (access denied)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 403,
+                                              "error": "Forbidden",
+                                              "message": "Access denied. Insufficient permissions.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            )))
+
+            }
+    )
+//    @PostMapping
+//    public ResponseEntity<String> createTask(
+//            @Valid @RequestBody TaskRequest request,
+//            @AuthenticationPrincipal Principal principal) {
+//
+//        String email = principal.getName(); // Получаем email пользователя из Principal
+//        taskService.createTask(request, email);
+//
+//        return ResponseEntity.ok("Task created successfully");
+//    }
+    @PostMapping
+    public ResponseEntity<String> createTask(
+            Principal principal,
+            @Valid @RequestBody TaskRequest request) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String email = principal.getName();
+        taskService.createTask(request, email);
+
+        return ResponseEntity.ok("Task created successfully");
+    }
+
 }

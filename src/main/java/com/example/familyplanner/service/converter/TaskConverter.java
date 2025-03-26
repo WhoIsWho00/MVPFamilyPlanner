@@ -30,9 +30,9 @@ public class TaskConverter {
             dto.setAssignedTo(userConverter.createDtoFromUser(task.getAssignedTo()));
         }
 
-        if (task.getCreatedBy() != null) {
-            dto.setCreatedBy(userConverter.createDtoFromUser(task.getCreatedBy()));
-        }
+//        if (task.getCreatedBy() != null) {
+//            dto.setCreatedBy(userConverter.createDtoFromUser(task.getCreatedBy()));
+//        }
 
         return dto;
     }

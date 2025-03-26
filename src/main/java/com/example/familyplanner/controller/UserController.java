@@ -1,11 +1,13 @@
 package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.RegistrationRequest;
+import com.example.familyplanner.dto.TaskRequest;
 import com.example.familyplanner.dto.UpdateProfileRequest;
 import com.example.familyplanner.dto.UserResponseDto;
 
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
+import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -13,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,6 +29,7 @@ public class UserController {
 
     private final FindUserService findService;
     private final RegisterUserService registerService;
+    private final TaskService taskService;
 
     @Operation(
             summary = "Create user",

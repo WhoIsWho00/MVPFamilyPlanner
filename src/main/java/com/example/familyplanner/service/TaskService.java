@@ -1,8 +1,11 @@
 package com.example.familyplanner.service;
 
+import com.example.familyplanner.dto.TaskRequest;
 import com.example.familyplanner.dto.TaskResponseDto;
 import com.example.familyplanner.entity.Task;
+import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.TaskRepository;
+import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.TaskConverter;
 
 import com.example.familyplanner.service.exception.NotFoundException;
@@ -11,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -22,6 +27,7 @@ import java.util.UUID;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskConverter taskConverter;
+    private final UserRepository userRepository;
 
     public Page<TaskResponseDto> getTasks(
             UUID familyId,
@@ -33,7 +39,6 @@ public class TaskService {
             String sortBy,
             String direction) {
 
-        // Default sort by creation date descending if not specified
         if (sortBy == null || sortBy.isEmpty()) {
             sortBy = "createdAt";
         }
@@ -53,5 +58,19 @@ public class TaskService {
                 .orElseThrow(() -> new NotFoundException("Task not found with ID: " + id));
 
         return taskConverter.convertToDto(task);
+    }
+
+    public void createTask(TaskRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setDueDate(request.getDueDate());
+        task.setAssignedTo(user);
+        task.setCreatedBy(user);
+
+        taskRepository.save(task);
     }
 }
