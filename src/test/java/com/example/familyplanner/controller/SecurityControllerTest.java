@@ -80,8 +80,7 @@ public class SecurityControllerTest {
                 authenticationManager,
                 jwtCore,
                 registerUserService,
-                findUserService,
-                passwordResetService
+                findUserService
         );
 
         mockMvc = MockMvcBuilders
