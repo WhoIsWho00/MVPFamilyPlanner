@@ -19,26 +19,34 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository tokenRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public void createResetToken(String email) {
+    public void sendResetToken(String email) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email not found"));
+
         String token = UUID.randomUUID().toString();
+
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
         resetToken.setUser(user);
         tokenRepo.save(resetToken);
 
+        // MOCK: виводимо токен в консоль
+        String resetLink = "http://localhost:8080/api/auth/reset-password?token=" + token;
+        System.out.println("🔐 Reset password link: " + resetLink);
     }
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken prt = tokenRepo.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
+
         if (prt.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Token expired");
         }
+
         User user = prt.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
+
         userRepo.save(user);
         tokenRepo.delete(prt);
     }
