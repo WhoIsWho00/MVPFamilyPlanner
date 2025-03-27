@@ -35,6 +35,8 @@ public class SecurityController {
 //1.После регистрации пользователь автоматически получает токен, чтобы не заставлять его сразу же входить в систему вручную
 //2.При логине токен тоже нужен, потому что пользователь мог выйти из системы и теперь заново входит.
 
+
+    //Возрващать DTO
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -111,7 +113,8 @@ public class SecurityController {
             }
     )
     @PostMapping("/sign-in")
-  
+
+    //Возрващать DTO
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
@@ -195,6 +198,7 @@ public class SecurityController {
     )
     @PostMapping("/sign-up")
 
+    //Возрващать DTO
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
