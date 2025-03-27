@@ -30,23 +30,22 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "API for user authentication and registration")
 public class SecurityController {
+    //Зачем дважды делать токены?
 
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
+//1.После регистрации пользователь автоматически получает токен, чтобы не заставлять его сразу же входить в систему вручную
+//2.При логине токен тоже нужен, потому что пользователь мог выйти из системы и теперь заново входит.
+
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
     private final FindUserService findUserService;
 
     @Autowired
-    public SecurityController(UserRepository userRepository,
-                              PasswordEncoder passwordEncoder,
+    public SecurityController(
                               AuthenticationManager authenticationManager,
                               JwtCore jwtCore,
                               RegisterUserService registerUserService,
                               FindUserService findUserService) {
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtCore = jwtCore;
         this.registerUserService = registerUserService;
@@ -121,7 +120,6 @@ public class SecurityController {
         Authentication authentication = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generate JWT token for the new user
         String jwt = jwtCore.createToken(loginRequest.getEmail());
 
         UserResponseDto userDto = findUserService.findUserByEmail(loginRequest.getEmail());
@@ -200,7 +198,6 @@ public class SecurityController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
         UserResponseDto newUser = registerUserService.createNewUser(request);
 
-        // Generate JWT token for the new user
         String jwt = jwtCore.createToken(request.getEmail());
 
         Map<String, Object> response = new HashMap<>();

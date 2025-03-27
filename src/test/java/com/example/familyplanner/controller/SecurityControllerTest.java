@@ -72,8 +72,6 @@ public class SecurityControllerTest {
 
 
         securityController = new SecurityController(
-                userRepository,
-                passwordEncoder,
                 authenticationManager,
                 jwtCore,
                 registerUserService,
