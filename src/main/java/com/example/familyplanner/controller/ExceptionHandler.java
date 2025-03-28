@@ -1,8 +1,7 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.service.exception.AlreadyExistException;
-import com.example.familyplanner.service.exception.NotFoundException;
-import com.example.familyplanner.service.exception.ValidationException;
+import com.example.familyplanner.dto.responses.ErrorResponseDto;
+import com.example.familyplanner.service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -53,5 +52,21 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         return new ResponseEntity<>("Authentication error: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorResponseDto> handleExpiredTokenException(ExpiredTokenException e) {
+        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+                .error("Token has expired")
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidTokenException(InvalidTokenException e) {
+        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+                .error("Invalid token")
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

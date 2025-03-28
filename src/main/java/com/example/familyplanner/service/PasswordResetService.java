@@ -4,50 +4,82 @@ import com.example.familyplanner.entity.PasswordResetToken;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.PasswordResetTokenRepository;
 import com.example.familyplanner.repository.UserRepository;
+import com.example.familyplanner.service.exception.ExpiredTokenException;
+import com.example.familyplanner.service.exception.InvalidTokenException;
+import com.example.familyplanner.service.exception.NotFoundException;
+import com.example.familyplanner.service.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
 
-    private final UserRepository userRepo;
-    private final PasswordResetTokenRepository tokenRepo;
+    private final UserRepository userRepository;
+    private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+
+    // Token expiration time in minutes - 5 minutes as per requirements
+    private static final int TOKEN_EXPIRATION_MINUTES = 5;
+
 
     public void sendResetToken(String email) {
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
 
-        String token = UUID.randomUUID().toString();
+        // Generate 6-digit numeric code as per requirements
+        String token = generateSixDigitCode();
 
+        // Invalidate any existing tokens for this user
+        List<PasswordResetToken> existingTokens = tokenRepository.findByUser(user);
+        existingTokens.forEach(t -> {
+            t.setExpiryDate(LocalDateTime.now().minusMinutes(1));
+            tokenRepository.save(t);
+        });
+
+        // Create new token
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
-        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
+        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(TOKEN_EXPIRATION_MINUTES));
         resetToken.setUser(user);
-        tokenRepo.save(resetToken);
+        tokenRepository.save(resetToken);
 
-        // MOCK: виводимо токен в консоль
-        String resetLink = "http://localhost:8080/api/auth/reset-password?token=" + token;
-        System.out.println("🔐 Reset password link: " + resetLink);
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
     }
 
-    public void resetPassword(String token, String newPassword) {
-        PasswordResetToken prt = tokenRepo.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid token"));
-
-        if (prt.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token expired");
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
+        // Validate that passwords match
+        if (!newPassword.equals(confirmPassword)) {
+            throw new ValidationException("Passwords do not match");
         }
 
-        User user = prt.getUser();
-        user.setPassword(passwordEncoder.encode(newPassword));
+        // Find the token
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
-        userRepo.save(user);
-        tokenRepo.delete(prt);
+        // Check if token is expired
+        if (resetToken.isExpired()) {
+            throw new ExpiredTokenException("Token has expired");
+        }
+
+        // Update user's password
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Mark token as used by expiring it
+        resetToken.setExpiryDate(LocalDateTime.now().minusMinutes(1));
+        tokenRepository.save(resetToken);
+    }
+    private String generateSixDigitCode() {
+        Random random = new Random();
+        return String.format("%06d", random.nextInt(1000000));
     }
 }

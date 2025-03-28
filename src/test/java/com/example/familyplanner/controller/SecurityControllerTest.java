@@ -80,9 +80,9 @@ public class SecurityControllerTest {
                 authenticationManager,
                 jwtCore,
                 registerUserService,
-                findUserService
+                findUserService,
+                passwordResetService
         );
-
         mockMvc = MockMvcBuilders
                 .standaloneSetup(securityController)
                 .setControllerAdvice(new TestExceptionHandler())
