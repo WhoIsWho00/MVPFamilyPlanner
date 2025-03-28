@@ -98,19 +98,19 @@ public class SecurityController {
 
   
         public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        // Authenticate the user
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generate JWT token
+
         String jwt = jwtCore.createToken(loginRequest.getEmail());
 
-        // Get user information
+
         UserResponseDto userDto = findUserService.findUserByEmail(loginRequest.getEmail());
 
-        // Create response
+
         AuthResponseDto responseDto = AuthResponseDto.builder()
                 .token(jwt)
                 .user(userDto)
@@ -194,13 +194,11 @@ public class SecurityController {
     )
   
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
-        // Create new user
+
         UserResponseDto newUser = registerUserService.createNewUser(request, httpRequest);
 
-        // Generate JWT token
         String jwt = jwtCore.createToken(request.getEmail());
 
-        // Create response
         RegisterResponseDto responseDto = RegisterResponseDto.builder()
                 .user(newUser)
                 .token(jwt)
@@ -264,7 +262,7 @@ public class SecurityController {
         try {
             passwordResetService.sendResetToken(request.getEmail());
         } catch (NotFoundException e) {
-            // Don't reveal if email exists or not (security best practice)
+            // Не показывает, созданна почта или нет(для коонфидециальности)
         }
 
         PasswordResetRequestResponseDto responseDto = PasswordResetRequestResponseDto.builder()
@@ -325,10 +323,9 @@ public class SecurityController {
                             )))}
     )
     public ResponseEntity<PasswordResetResponseDto> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        // Let the service method handle the validation and throw exceptions if needed
+        //метод сам проверает не нарушены ли данные. В случае чего - сам прокинет exception
         passwordResetService.resetPassword(request.getToken(), request.getNewPassword(), request.getConfirmPassword());
 
-        // If we reach here, password reset was successful
         PasswordResetResponseDto responseDto = PasswordResetResponseDto.builder()
                 .message("Your password has been reset successfully")
                 .build();

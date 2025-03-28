@@ -45,8 +45,6 @@ public class RegisterUserService {
         long recentRegistrations = logRepository.countRecentRegistrations(ip, timeLimit);
         if (recentRegistrations >= MAX_REGISTRATIONS) {
             throw new ExcessRegistrationLimitException("Maximum number of registrations reached, try again later");
-//            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-//                    .body("Слишком много регистраций с этого IP. Попробуйте позже.");
         }
 
         if (validation.userExists(request.getEmail())) {
