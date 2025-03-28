@@ -34,10 +34,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Swagger UI access
-                        .requestMatchers("/api/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/api-docs/**").permitAll()
-                        .requestMatchers("/api/v3/api-docs/**").permitAll()
+
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui/index.html").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                                       
                         // API endpoints
                         .requestMatchers("/api/auth/sign-up").permitAll()
                         .requestMatchers("/api/auth/sign-in").permitAll()
@@ -71,7 +73,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173" ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(false);
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
