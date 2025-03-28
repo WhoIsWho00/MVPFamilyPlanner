@@ -3,6 +3,7 @@ package com.example.familyplanner.Security.JWT;
 import com.example.familyplanner.service.exception.InvalidJwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ public class JwtCore {
             return true;
 
         } catch (JwtException e) {
-            throw new InvalidJwtException("Invalid JWT token: " + e.getMessage());
+            return false;
         }
     }
 
@@ -57,4 +58,4 @@ public class JwtCore {
 
         return claims.getSubject();
     }
-}
+   }
