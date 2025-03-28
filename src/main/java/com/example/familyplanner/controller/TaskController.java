@@ -37,8 +37,55 @@ public class TaskController {
                     @ApiResponse(responseCode = "200", description = "Successful operation",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = Page.class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized (authentication required)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 401,
+                          "error": "Unauthorized",
+                          "message": "Authentication required. Please log in.",
+                          "path": "/api/tasks"
+                        }
+                        """
+
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (insufficient permissions)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 403,
+                          "error": "Forbidden",
+                          "message": "You do not have permission to access these tasks.",
+                          "path": "/api/tasks"
+                        }
+                        """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            )))
             }
     )
     @GetMapping
@@ -63,10 +110,6 @@ public class TaskController {
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-//                    @ApiResponse(responseCode = "200", description = "Successful operation"),
-//                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-//                    @ApiResponse(responseCode = "404", description = "Task not found"),
-//                    @ApiResponse(responseCode = "500", description = "Internal server error")
                     @ApiResponse(responseCode = "201", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
@@ -90,7 +133,7 @@ public class TaskController {
                                               "message": {
                                               "title": "title is required"
                                               },
-                                              "path": "/api/tasks/"
+                                              "path": "/api/tasks/2"
                                             }
                                             """
                             ))),
@@ -102,7 +145,7 @@ public class TaskController {
                                               "status": 404,
                                               "error": "Not Found",
                                               "message": "",
-                                              "path": "/api/auth/sign-up"
+                                              "path": "/api/tasks/2"
                                             }
                                             """
                             ))),
@@ -114,7 +157,7 @@ public class TaskController {
                                               "status": 500,
                                               "error": "Internal Server Error",
                                               "message": "An unexpected error occurred.",
-                                              "path": "/api/auth/sign-up"
+                                              "path": "/api/tasks"
                                             }
                                             """
                             )))
@@ -168,7 +211,7 @@ public class TaskController {
                                               "status": 403,
                                               "error": "Forbidden",
                                               "message": "Access denied. Insufficient permissions.",
-                                              "path": "/api/auth/sign-up"
+                                              "path": "/api/tasks"
                                             }
                                             """
                             ))),
@@ -180,7 +223,7 @@ public class TaskController {
                                               "status": 500,
                                               "error": "Internal Server Error",
                                               "message": "An unexpected error occurred.",
-                                              "path": "/api/auth/sign-up"
+                                              "path": "/api/tasks"
                                             }
                                             """
                             )))

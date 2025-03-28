@@ -83,9 +83,9 @@ public class UserController {
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-                                              "task": {
+                                              "user": {
                                                 "id": 2,
-                                                "title": "new_task",
+                                                "name": "new_name",
                                               },
                                               "message": "Profile successfully updated",
                                               "status": "success"
@@ -97,12 +97,12 @@ public class UserController {
                                     value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
-                                              "status": 400,
+                                              "status": 401,
                                               "error": "Bad Request",
                                               "message": {
                                               "title": "title is required"
                                               },
-                                              "path": "/api/tasks/"
+                                              "path": "/api/users/profile"
                                             }
                                             """
                             ))),
@@ -113,8 +113,8 @@ public class UserController {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 404,
                                               "error": "Not Found",
-                                              "message": "",
-                                              "path": "/api/auth/sign-up"
+                                              "message": "User not found",
+                                              "path": "/api/users/profile"
                                             }
                                             """
                             ))),
@@ -126,7 +126,7 @@ public class UserController {
                                               "status": 500,
                                               "error": "Internal Server Error",
                                               "message": "An unexpected error occurred.",
-                                              "path": "/api/auth/sign-up"
+                                              "path": "/api/users/profile"
                                             }
                                             """
                             )))

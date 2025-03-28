@@ -1,17 +1,26 @@
 package com.example.familyplanner.service;
 
+import com.example.familyplanner.Other.IPAdressUtil.IpAddressUtil;
 import com.example.familyplanner.dto.requests.RegistrationRequest;
 import com.example.familyplanner.dto.requests.UpdateProfileRequest;
 import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.User;
+import com.example.familyplanner.entity.UserRegistrationLog;
+import com.example.familyplanner.repository.UserRegistrationLogRepository;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.AlreadyExistException;
+import com.example.familyplanner.service.exception.ExcessRegistrationLimitException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import com.example.familyplanner.service.validation.ValidationService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +30,32 @@ public class RegisterUserService {
     private final UserConverter converter;
     private final ValidationService validation;
 
+    private final UserRegistrationLogRepository logRepository;
 
-    public UserResponseDto createNewUser(RegistrationRequest request) {
+    private final IpAddressUtil ipAddressUtil;
+    private static final int MAX_REGISTRATIONS = 4;
+    private static final int TIME_LIMIT_MINUTES = 10;
+
+
+    public UserResponseDto createNewUser(RegistrationRequest request, HttpServletRequest httpRequest) {
+
+        String ip = ipAddressUtil.getClientIp(httpRequest);
+        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(TIME_LIMIT_MINUTES);
+
+        long recentRegistrations = logRepository.countRecentRegistrations(ip, timeLimit);
+        if (recentRegistrations >= MAX_REGISTRATIONS) {
+            throw new ExcessRegistrationLimitException("Maximum number of registrations reached, try again later");
+//            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+//                    .body("Слишком много регистраций с этого IP. Попробуйте позже.");
+        }
+
         if (validation.userExists(request.getEmail())) {
             throw new AlreadyExistException("User with email " + request.getEmail() + " already exists");
         }
         User newUser = converter.createUserFromDto(request);
         User savedUser = userRepository.save(newUser);
+
+        logRepository.save(new UserRegistrationLog(ip, LocalDateTime.now()));
 
         return converter.createDtoFromUser(savedUser);
     }
