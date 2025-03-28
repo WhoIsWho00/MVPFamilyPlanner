@@ -22,7 +22,7 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private final UserRepository userRepository;
-    private final PasswordResetTokenRepository tokenRepository;
+    private final PasswordResetTokenRepository resetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -38,10 +38,10 @@ public class PasswordResetService {
         String token = generateSixDigitCode();
 
         // Invalidate any existing tokens for this user
-        List<PasswordResetToken> existingTokens = tokenRepository.findByUser(user);
+        List<PasswordResetToken> existingTokens = resetTokenRepository.findByUser(user);
         existingTokens.forEach(t -> {
             t.setExpiryDate(LocalDateTime.now().minusMinutes(1));
-            tokenRepository.save(t);
+            resetTokenRepository.save(t);
         });
 
         // Create new token
@@ -49,7 +49,7 @@ public class PasswordResetService {
         resetToken.setToken(token);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(TOKEN_EXPIRATION_MINUTES));
         resetToken.setUser(user);
-        tokenRepository.save(resetToken);
+        resetTokenRepository.save(resetToken);
 
         emailService.sendPasswordResetEmail(user.getEmail(), token);
     }
@@ -61,7 +61,7 @@ public class PasswordResetService {
         }
 
         // Find the token
-        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+        PasswordResetToken resetToken = resetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
         // Check if token is expired
@@ -76,7 +76,7 @@ public class PasswordResetService {
 
         // Mark token as used by expiring it
         resetToken.setExpiryDate(LocalDateTime.now().minusMinutes(1));
-        tokenRepository.save(resetToken);
+        resetTokenRepository.save(resetToken);
     }
     private String generateSixDigitCode() {
         Random random = new Random();
