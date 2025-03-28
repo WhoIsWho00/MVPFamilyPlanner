@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication", description = "API for user authentication and password recovery")
 public class SecurityController {
 
+
+    //Возрващать DTO
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -37,9 +39,9 @@ public class SecurityController {
     @PostMapping("/sign-in")
     @Operation(
             summary = "Authenticate user",
-            description = "Authenticates user and returns JWT token along with user info"
-    )
-    public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+            description = "Authenticates user and returns JWT token along with user info")
+  
+        public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         // Authenticate the user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
@@ -68,6 +70,7 @@ public class SecurityController {
             summary = "Register new user",
             description = "Registers a new user and returns JWT token along with user info"
     )
+  
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request) {
         // Create new user
         UserResponseDto newUser = registerUserService.createNewUser(request);
