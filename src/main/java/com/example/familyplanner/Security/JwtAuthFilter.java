@@ -27,6 +27,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private UserService userService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/auth/") ||
+                path.startsWith("/swagger-ui/") ||
+                path.startsWith("/api-docs/") ||
+                path.startsWith("/v3/api-docs/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
@@ -42,9 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("Failed to authenticate user: {}", e);
-            // Not passing error details to the client for security
-        }
+                   }
 
         filterChain.doFilter(request, response);
     }
