@@ -27,14 +27,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private UserService userService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // Виключаємо JWT-фільтрацію для публічних ендпоінтів
         String path = request.getRequestURI();
-        return path.startsWith("/api/auth/") ||
-                path.startsWith("/swagger-ui/") ||
-                path.startsWith("/api-docs/") ||
-                path.startsWith("/v3/api-docs/");
+        return path.startsWith("/api/auth/sign-up") ||   // Реєстрація
+                path.startsWith("/api/auth/sign-in") ||   // Вхід
+                path.startsWith("/swagger-ui/") ||        // Swagger UI
+                path.startsWith("/v3/api-docs/") ||       // API документація
+                request.getMethod().equals("OPTIONS");    // OPTIONS запити
     }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

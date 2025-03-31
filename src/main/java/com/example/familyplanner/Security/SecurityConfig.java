@@ -1,5 +1,6 @@
 package com.example.familyplanner.Security;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
@@ -39,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/api-docs/**").permitAll()
                         .requestMatchers("/api/v3/api-docs/**").permitAll()
                         // API endpoints
-                        .requestMatchers("/api/auth/sign-up").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/auth/sign-up").permitAll()
                         .requestMatchers("/api/auth/sign-in").permitAll()
                         .requestMatchers("/api/auth/forgot-password").permitAll()
                         .requestMatchers("/api/auth/reset-password").permitAll()
@@ -50,10 +52,15 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+
+
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+
+
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,6 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173" ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

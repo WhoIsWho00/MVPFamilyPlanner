@@ -2,10 +2,7 @@ package com.example.familyplanner.dto.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegistrationRequest {
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Username must not contain any special characters")
+        @Pattern(regexp = "^[\\p{L}0-9\\-]+$", message = "Username must not contain any special characters")
         //^ — начало строки
         //[a-zA-Z0-9]+ — только латинские буквы и цифры, не менее одного символа
         //$ — конец строки
@@ -25,25 +22,31 @@ public class RegistrationRequest {
         @Schema(description = "User's username", example = "JohnDoe", required = true)
         private String username;
 
-        @Email(message = "invalid Email format")
-        @NotBlank
-        @Size(max = 40)
-        @Schema(description = "User's email address", example = "john.doe@example.com", required = true)
+        @NotBlank(message = "Email cannot be empty")
+        @Email(message = "Invalid email format")
+        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+                message = "Email must be a valid email address with a proper domain")
+        @Size(max = 40, message = "Email cannot be longer than 40 characters")
+        @Schema(description = "User's email address", example = "blackjack@ua", required = true)
         private String email;
 
-        @NotBlank
+        @NotBlank(message = "Password cannot be empty")
         @Pattern(
-                regexp = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).*$",
-                message = "Password must contain at least one special character (!@#$%^&* etc.)")
+                regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).*$",
+                message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, and one special character")
         @Size(min = 8, message = "Password should have at least 8 symbols")
-        @Size(max = 25, message = "Password cant be bigger than 25 symbols")
-        @Schema(description = "User's password (min 8 chars, must include special character)", example = "Password!23", required = true)
+        @Size(max = 25, message = "Password can't be longer than 25 symbols")
+        @Schema(description = "User's password (min 8 chars, must include lowercase, uppercase, digit, and special character)", example = "Password1!", required = true)
         private String password;
 
-        @Schema(description = "User's chosen avatar identifier", example = "avatar1")
-        @Column(name = "avatar_id")
+        @NotBlank(message = "Avatar must not be empty")
+        @Schema(description = "User's chosen avatar identifier", example = "avatar1", required = true)
+        @Pattern(regexp = "^avatar[1-6]$", message = "Invalid avatar ID. Must be between avatar1 and avatar6")
         private String avatarId;
 
+        @NotNull(message = "Age must not be empty")
+        @Min(value = 5, message = "Age must be at least 5")
+        @Max(value = 100, message = "Age must not exceed 100")
         @Schema(description = "User's age", example = "25", minimum = "5", maximum = "100")
         private Integer age;
     }
