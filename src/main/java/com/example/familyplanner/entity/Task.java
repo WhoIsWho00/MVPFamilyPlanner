@@ -25,6 +25,8 @@ public class Task {
     @Column(length = 300)
     private String description;
 
+
+    @Temporal(TemporalType.DATE)
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
