@@ -8,6 +8,8 @@ import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -71,11 +73,63 @@ public class UserController {
             description = "Updates authenticated user's profile information",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Profile successfully updated"),
-                    @ApiResponse(responseCode = "400", description = "Validation error or email already in use"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "User not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+//                    @ApiResponse(responseCode = "200", description = "Profile successfully updated"),
+//                    @ApiResponse(responseCode = "400", description = "Validation error or email already in use"),
+//                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//                    @ApiResponse(responseCode = "404", description = "User not found"),
+//                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+
+                    @ApiResponse(responseCode = "201", description = "Profile successfully updated",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "task": {
+                                                "id": 2,
+                                                "title": "new_task",
+                                              },
+                                              "message": "Profile successfully updated",
+                                              "status": "success"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Task validation failed",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": {
+                                              "title": "title is required"
+                                              },
+                                              "path": "/api/tasks/"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            )))
             }
     )
     @PutMapping("/profile")

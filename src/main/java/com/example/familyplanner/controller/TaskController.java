@@ -88,7 +88,7 @@ public class TaskController {
                                     value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
-                                              "status": 400,
+                                              "status": 401,
                                               "error": "Bad Request",
                                               "message": {
                                               "title": "title is required"
