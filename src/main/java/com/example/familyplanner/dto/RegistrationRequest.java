@@ -30,15 +30,21 @@ public class RegistrationRequest {
         @Size(max = 40)
         @Schema(description = "User's email address", example = "john.doe@example.com", required = true)
         private String email;
-
         @NotBlank
+        @Pattern(
+                regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]+$",
+                message = "Password must contain only Latin letters, digits, and special characters")
         @Pattern(
                 regexp = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).*$",
                 message = "Password must contain at least one special character (!@#$%^&* etc.)")
         @Size(min = 8, message = "Password should have at least 8 symbols")
         @Size(max = 25, message = "Password cant be bigger than 25 symbols")
-        @Schema(description = "User's password (min 8 chars, must include special character)", example = "Password!23", required = true)
+        @Schema(
+                description = "User's password (min 8 chars, must include special character, only Latin letters allowed)",
+                example = "Password!23",
+                required = true)
         private String password;
+
 
         @Schema(description = "User's chosen avatar identifier", example = "avatar1")
         @Column(name = "avatar_id")
