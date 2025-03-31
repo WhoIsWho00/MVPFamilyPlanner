@@ -3,6 +3,7 @@ package com.example.familyplanner.service;
 import com.example.familyplanner.Security.JWT.UserDetailImpl;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,14 +13,10 @@ import org.springframework.stereotype.Service;
 @Service
 //Главна задача этого сервиса состоит в том, чтобы находить пользователя по email при попытке аутентификации.
 //В случае успеха - возвращает преобразованного пользователя в понятном формате для Spring Security
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private UserRepository userRepository;
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

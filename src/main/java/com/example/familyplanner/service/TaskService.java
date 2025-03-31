@@ -10,7 +10,6 @@ import com.example.familyplanner.service.converter.TaskConverter;
 
 import com.example.familyplanner.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,10 +74,10 @@ public class TaskService {
 
         taskRepository.save(task);
     }
-    @Autowired
 
 
-    public List<Task> getTasksBetweenDates(Date startDate, Date endDate) {
-        return taskRepository.findByDueDateBetween(startDate, endDate);
+    public List<TaskResponseDto> getTasksBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Task> taskList = taskRepository.findByDueDateBetween(startDate, endDate);
+        return taskConverter.convertTasksToDto(taskList);
     }
 }
