@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -19,6 +21,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     Page<Task> findByFamilyId(UUID familyId, Pageable pageable);
 
     Page<Task> findByCreatedBy(User user, Pageable pageable);
+    List<Task> findByDueDateBetween(Date startDate, Date endDate);
 
     @Query("SELECT t FROM Task t WHERE " +
             "(:familyId IS NULL OR t.familyId = :familyId) AND " +
