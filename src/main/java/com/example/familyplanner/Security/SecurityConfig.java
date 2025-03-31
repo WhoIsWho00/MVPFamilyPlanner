@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Swagger UI access
                         .requestMatchers("/api/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/swagger-ui/index.html").permitAll()
                         .requestMatchers("/api/api-docs/**").permitAll()
                         .requestMatchers("/api/v3/api-docs/**").permitAll()
                         // API endpoints
