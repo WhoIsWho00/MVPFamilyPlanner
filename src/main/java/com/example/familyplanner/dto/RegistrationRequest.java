@@ -46,6 +46,7 @@ public class RegistrationRequest {
         private String password;
 
 
+
         @Schema(description = "User's chosen avatar identifier", example = "avatar1")
         @Column(name = "avatar_id")
         private String avatarId;

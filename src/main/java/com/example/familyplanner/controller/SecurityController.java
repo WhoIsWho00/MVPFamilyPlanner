@@ -33,8 +33,8 @@ import java.util.Optional;
 @Tag(name = "Authentication", description = "API for user authentication and registration")
 public class SecurityController {
 
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -47,8 +47,8 @@ public class SecurityController {
                               JwtCore jwtCore,
                               RegisterUserService registerUserService,
                               FindUserService findUserService) {
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtCore = jwtCore;
         this.registerUserService = registerUserService;
@@ -114,7 +114,7 @@ public class SecurityController {
             }
     )
     @PostMapping("/sign-in")
-  
+
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
