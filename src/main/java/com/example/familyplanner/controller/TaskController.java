@@ -2,7 +2,7 @@ package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.requests.TaskRequest;
 import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.entity.Task;
+
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,13 +31,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Tasks", description = "Task management API")
     public class TaskController {
-        @Autowired
-        private TaskService taskService;
+
+        private final TaskService taskService;
 
         @GetMapping("/calendar")
-        public List<Task> getTasksByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-            return taskService.getTasksBetweenDates(startDate, endDate);
+        public ResponseEntity<List<TaskResponseDto>> getTasksByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startDate,
+                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endDate) {
+            List<TaskResponseDto> tasksBetweenDates= taskService.getTasksBetweenDates(startDate, endDate);
+            return ResponseEntity.ok(tasksBetweenDates);
+
         }
 
 

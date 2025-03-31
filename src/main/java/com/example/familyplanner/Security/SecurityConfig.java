@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         // tasks endpoint
                         .requestMatchers("/api/tasks/**").authenticated()
+                        .requestMatchers("/api/tasks").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

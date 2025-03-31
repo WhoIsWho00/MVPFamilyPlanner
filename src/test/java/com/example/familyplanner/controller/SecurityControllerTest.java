@@ -12,6 +12,7 @@ import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.ValidationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,7 +144,10 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithValidData_ReturnsCreatedUser() throws Exception {
-        when(registerUserService.createNewUser(any(RegistrationRequest.class))).thenReturn(userResponseDto);
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+
+        when(registerUserService.createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class)))
+                .thenReturn(userResponseDto);
 
         mockMvc.perform(post("/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,12 +160,12 @@ public class SecurityControllerTest {
                 .andExpect(jsonPath("$.message").value("User successfully registered"))
                 .andExpect(jsonPath("$.status").value("success"));
 
-        verify(registerUserService).createNewUser(any(RegistrationRequest.class));
+        verify(registerUserService).createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class));
     }
 
     @Test
     void registerUser_WithExistingEmail_ReturnsBadRequest() throws Exception {
-        when(registerUserService.createNewUser(any(RegistrationRequest.class)))
+        when(registerUserService.createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class)))
                 .thenThrow(new AlreadyExistException("User with email test@example.com already exists"));
 
         mockMvc.perform(post("/api/auth/sign-up")
@@ -174,7 +178,7 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithInvalidPassword_ReturnsBadRequest() throws Exception {
-        when(registerUserService.createNewUser(any(RegistrationRequest.class)))
+        when(registerUserService.createNewUser(any(RegistrationRequest.class),any(HttpServletRequest.class)))
                 .thenThrow(new ValidationException("Password does not meet security requirements"));
 
         mockMvc.perform(post("/api/auth/sign-up")
