@@ -1,5 +1,6 @@
 package com.example.familyplanner.dto;
 
+import com.example.familyplanner.service.validation.ValidAvatarId;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -46,10 +47,11 @@ public class RegistrationRequest {
         private String password;
 
 
-
+        @ValidAvatarId
         @Schema(description = "User's chosen avatar identifier", example = "avatar1")
         @Column(name = "avatar_id")
         private String avatarId;
+
 
         @Schema(description = "User's age", example = "25", minimum = "5", maximum = "100")
         private Integer age;
