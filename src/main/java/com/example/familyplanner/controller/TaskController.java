@@ -103,6 +103,7 @@ import java.util.UUID;
             }
     )
     @GetMapping
+    //сортировать только по статусу
     public ResponseEntity<Page<TaskResponseDto>> getTasks(
             @Parameter(description = "Filter by family ID") @RequestParam(required = false) UUID familyId,
             @Parameter(description = "Filter by completion status") @RequestParam(required = false) Boolean completed,
@@ -124,7 +125,7 @@ import java.util.UUID;
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Task successfully found",
+                    @ApiResponse(responseCode = "200", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
@@ -190,7 +191,7 @@ import java.util.UUID;
             summary = "Create a new task for the authenticated user",
             description = "Creates a new task and associates it with the currently authenticated user. The task will be saved to the database.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Task successfully created",
+                    @ApiResponse(responseCode = "200", description = "Task successfully created",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {

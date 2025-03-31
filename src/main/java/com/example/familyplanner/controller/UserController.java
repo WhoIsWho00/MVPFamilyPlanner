@@ -2,9 +2,7 @@ package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.requests.UpdateProfileRequest;
 import com.example.familyplanner.dto.responses.UserResponseDto;
-//import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.RegisterUserService;
-//import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -18,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-//import java.util.List;
 
 
 @RestController
@@ -67,82 +64,82 @@ public class UserController {
 //        return findService.findUserByEmail(email);
 //    }
 
-    @Operation(
-            summary = "Update user profile",
-            description = "Updates authenticated user's profile information",
-            security = @SecurityRequirement(name = "JWT"),
-            responses = {
+//    @Operation(
+//            summary = "Update user profile",
+//            description = "Updates authenticated user's profile information",
+//            security = @SecurityRequirement(name = "JWT"),
+//            responses = {
 //                    @ApiResponse(responseCode = "200", description = "Profile successfully updated"),
 //                    @ApiResponse(responseCode = "400", description = "Validation error or email already in use"),
 //                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
 //                    @ApiResponse(responseCode = "404", description = "User not found"),
 //                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
-
-                    @ApiResponse(responseCode = "201", description = "Profile successfully updated",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "user": {
-                                                "id": 2,
-                                                "name": "new_name",
-                                              },
-                                              "message": "Profile successfully updated",
-                                              "status": "success"
-                                            }
-                                            """
-                            ))),
-                    @ApiResponse(responseCode = "401", description = "Task validation failed",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "timestamp": "2025-03-25T16:26:19.597Z",
-                                              "status": 401,
-                                              "error": "Bad Request",
-                                              "message": {
-                                              "title": "title is required"
-                                              },
-                                              "path": "/api/users/profile"
-                                            }
-                                            """
-                            ))),
-                    @ApiResponse(responseCode = "404", description = "Not Found",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "timestamp": "2025-03-25T16:26:19.597Z",
-                                              "status": 404,
-                                              "error": "Not Found",
-                                              "message": "User not found",
-                                              "path": "/api/users/profile"
-                                            }
-                                            """
-                            ))),
-                    @ApiResponse(responseCode = "500", description = "Internal server error",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "timestamp": "2025-03-25T16:26:19.597Z",
-                                              "status": 500,
-                                              "error": "Internal Server Error",
-                                              "message": "An unexpected error occurred.",
-                                              "path": "/api/users/profile"
-                                            }
-                                            """
-                            )))
-            }
-    )
-    @PutMapping("/profile")
-    public ResponseEntity<UserResponseDto> updateUserProfile(
-            Principal principal,
-            @Valid @RequestBody UpdateProfileRequest request) {
-
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = principal.getName();
-        UserResponseDto updatedUser = registerService.updateUserProfile(email, request);
-
-        return ResponseEntity.ok(updatedUser);
-    }
+//
+//                    @ApiResponse(responseCode = "201", description = "Profile successfully updated",
+//                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+//                                    value = """
+//                                            {
+//                                              "user": {
+//                                                "id": 2,
+//                                                "name": "new_name",
+//                                              },
+//                                              "message": "Profile successfully updated",
+//                                              "status": "success"
+//                                            }
+//                                            """
+//                            ))),
+//                    @ApiResponse(responseCode = "401", description = "Task validation failed",
+//                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+//                                    value = """
+//                                            {
+//                                              "timestamp": "2025-03-25T16:26:19.597Z",
+//                                              "status": 401,
+//                                              "error": "Bad Request",
+//                                              "message": {
+//                                              "title": "title is required"
+//                                              },
+//                                              "path": "/api/users/profile"
+//                                            }
+//                                            """
+//                            ))),
+//                    @ApiResponse(responseCode = "404", description = "Not Found",
+//                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+//                                    value = """
+//                                            {
+//                                              "timestamp": "2025-03-25T16:26:19.597Z",
+//                                              "status": 404,
+//                                              "error": "Not Found",
+//                                              "message": "User not found",
+//                                              "path": "/api/users/profile"
+//                                            }
+//                                            """
+//                            ))),
+//                    @ApiResponse(responseCode = "500", description = "Internal server error",
+//                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+//                                    value = """
+//                                            {
+//                                              "timestamp": "2025-03-25T16:26:19.597Z",
+//                                              "status": 500,
+//                                              "error": "Internal Server Error",
+//                                              "message": "An unexpected error occurred.",
+//                                              "path": "/api/users/profile"
+//                                            }
+//                                            """
+//                            )))
+//            }
+//    )
+//    @PutMapping("/profile")
+//    public ResponseEntity<UserResponseDto> updateUserProfile(
+//            Principal principal,
+//            @Valid @RequestBody UpdateProfileRequest request) {
+//
+//        if (principal == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//        String email = principal.getName();
+//        UserResponseDto updatedUser = registerService.updateUserProfile(email, request);
+//
+//        return ResponseEntity.ok(updatedUser);
+//    }
 }
 
