@@ -4,6 +4,7 @@ import com.example.familyplanner.Security.JWT.JwtCore;
 import com.example.familyplanner.dto.LoginRequest;
 import com.example.familyplanner.dto.RegistrationRequest;
 import com.example.familyplanner.dto.UserResponseDto;
+import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -99,4 +101,25 @@ public class SecurityController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email,
+                                                  @RequestParam("newPassword") String newPassword) {
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return ResponseEntity.ok("Пароль успешно обновлён");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь с таким email не найден");
+        }
+    }
+
+
+
+
+
 }
+
