@@ -2,10 +2,7 @@ package com.example.familyplanner.dto.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,9 +39,11 @@ public class RegistrationRequest {
 
         @Schema(description = "User's chosen avatar identifier", example = "avatar1")
         @Column(name = "avatar_id")
+        @NotBlank
         private String avatarId;
 
         @Schema(description = "User's age", example = "25", minimum = "5", maximum = "100")
+        @NotNull
         private Integer age;
     }
 
