@@ -201,4 +201,17 @@ public class TaskController {
         return ResponseEntity.ok("Task created successfully");
     }
 
+   /* @PutMapping
+    public ResponseEntity<String> updateTaskDescription(UUID taskId, String newDescription, String email){
+        updateTaskDescription(taskId, newDescription, email);
+        return ResponseEntity.ok("Task successfully updated!");
+    }  */
+
+
+    @PostMapping
+    public ResponseEntity<String> updateTaskStatus(@RequestParam UUID taskId, @RequestBody String email){
+        taskService.toggleTaskCompletion(taskId, email);
+        return ResponseEntity.ok("Task successfully updated!");
+    }
+
 }
