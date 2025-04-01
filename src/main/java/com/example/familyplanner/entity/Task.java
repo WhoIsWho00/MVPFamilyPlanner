@@ -48,6 +48,7 @@ public class Task {
     @Column(name = "priority")
     private Integer priority;
 
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

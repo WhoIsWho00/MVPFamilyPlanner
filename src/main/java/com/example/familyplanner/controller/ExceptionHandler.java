@@ -59,6 +59,11 @@ public class ExceptionHandler {
         return new ResponseEntity<>("Authentication error: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(SecurityException.class)
+    public ResponseEntity<String> handleSecurityException(SecurityException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(ExpiredTokenException.class)
     public ResponseEntity<ErrorResponseDto> handleExpiredTokenException(ExpiredTokenException e) {
         ErrorResponseDto errorResponse = ErrorResponseDto.builder()
@@ -73,5 +78,5 @@ public class ExceptionHandler {
                 .error("Invalid token")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+
 }

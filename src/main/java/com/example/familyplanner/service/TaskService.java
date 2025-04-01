@@ -61,6 +61,7 @@ public class TaskService {
         return taskConverter.convertToDto(task);
     }
 
+
     public void createTask(TaskRequest request, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -76,8 +77,47 @@ public class TaskService {
     }
 
 
+
+    public void updateTaskDescription(UUID taskId, String newDescription, String email) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Проверяем, что пользователь является создателем задачи
+        if (!task.getCreatedBy().equals(user)) {
+            // && !user.isAdmin()
+            throw new SecurityException("You do not have permission to edit this task");
+        }
+
+        task.setDescription(newDescription);
+        taskRepository.save(task);
+    }   
+
+  
+    public void toggleTaskCompletion(UUID taskId, String email) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Проверяем, что пользователь является создателем задачи
+        if (!task.getCreatedBy().equals(user)) {
+            // && !user.isAdmin()
+            throw new SecurityException("You do not have permission to edit this task");
+        }
+
+        // Переключаем статус выполнения
+        task.setCompleted(!task.isCompleted());
+        taskRepository.save(task);
+    }
+
+
     public List<TaskResponseDto> getTasksBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
         List<Task> taskList = taskRepository.findByDueDateBetween(startDate, endDate);
         return taskConverter.convertTasksToDto(taskList);
     }
+
 }
