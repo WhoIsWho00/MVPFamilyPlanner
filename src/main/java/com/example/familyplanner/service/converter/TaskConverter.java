@@ -5,6 +5,9 @@ import com.example.familyplanner.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class TaskConverter {
@@ -35,5 +38,30 @@ public class TaskConverter {
         }
 
         return dto;
+    }
+
+    public List<TaskResponseDto> convertTasksToDto(List<Task> taskList) {
+        if(taskList == null ) {
+            return null;
+        }
+        List<TaskResponseDto> dtoList = new ArrayList<>();
+        for (Task task : taskList) {
+            TaskResponseDto dto = convertToDto(task);
+            dto.setId(task.getId());
+            dto.setTitle(task.getTitle());
+            dto.setDescription(task.getDescription());
+            dto.setDueDate(task.getDueDate());
+            dto.setCreatedAt(task.getCreatedAt());
+            dto.setCompleted(task.isCompleted());
+            dto.setFamilyId(task.getFamilyId());
+            dto.setPriority(task.getPriority());
+
+            if (task.getAssignedTo() != null) {
+                dto.setAssignedTo(userConverter.createDtoFromUser(task.getAssignedTo()));
+            }
+
+        }
+
+        return dtoList;
     }
 }

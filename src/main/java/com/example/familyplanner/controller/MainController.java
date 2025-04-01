@@ -8,14 +8,14 @@ import java.security.Principal;
 
 //Может использоваться фронтом для получения инфо о текущем пользователе
 //Например, фронт после логина дергает /secured/user, получает имя и показывает "Привет, [username]!".
-@RestController
-@RequestMapping("/secured")
-public class MainController {
-    @GetMapping("/user")
-    public String userAccess(Principal principal) {
-        if (principal == null) {
-            return null;
-        }
-        return principal.getName();
-    }
-}
+//@RestController
+//@RequestMapping("/secured")
+//public class MainController {
+//    @GetMapping("/user")
+//    public String userAccess(Principal principal) {
+//        if (principal == null) {
+//            return null;
+//        }
+//        return principal.getName();
+//    }
+//}

@@ -9,6 +9,7 @@ import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,7 +126,7 @@ public class UserControllerTest {
 
     @Test
     void createNewUser_shouldReturnCreatedUser_whenDataIsValid() throws Exception {
-        when(registerUserService.createNewUser(any(RegistrationRequest.class))).thenReturn(userResponseDto1);
+        when(registerUserService.createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class))).thenReturn(userResponseDto1);
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -139,7 +140,7 @@ public class UserControllerTest {
 
     @Test
     void createNewUser_shouldReturnBadRequest_whenUserAlreadyExists() throws Exception {
-        when(registerUserService.createNewUser(any(RegistrationRequest.class)))
+        when(registerUserService.createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class)))
                 .thenThrow(new AlreadyExistException("User with email newuser@example.com already exists"));
 
         mockMvc.perform(post("/api/users")
