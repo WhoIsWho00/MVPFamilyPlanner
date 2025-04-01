@@ -19,7 +19,7 @@ public class RegistrationRequest {
         @NotBlank
         @Pattern(regexp = "^[a-zA-Z0-9-_]{3,20}$", message = "Username can only contain letters, numbers, dashes, and underscores")
         //^ — начало строки
-        //[a-zA-Z0-9]+ — только латинские буквы и цифры, не менее одного символа
+        //[a-zA-Z0-9]+ — только латинские буквы и цифры, не менее одного символа и большой буквы
         //$ — конец строки
         @Size(min = 2, message = "Username should have at least 2 symbols")
         @Size(max = 15, message = "Username can't be more than 15 symbols")
