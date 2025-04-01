@@ -10,6 +10,7 @@ import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import com.example.familyplanner.service.validation.ValidationService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,6 +35,8 @@ class RegisterUserServiceTest {
 
     @Mock
     private ValidationService validationService;
+
+    HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 
     @InjectMocks
     private RegisterUserService registerUserService;
@@ -84,7 +87,7 @@ class RegisterUserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(newUser);
         when(converter.createDtoFromUser(any(User.class))).thenReturn(userResponseDto);
 
-        UserResponseDto result = registerUserService.createNewUser(registrationRequest);
+        UserResponseDto result = registerUserService.createNewUser(registrationRequest, mockRequest);
 
         assertNotNull(result);
         assertEquals(userResponseDto.getId(), result.getId());
@@ -103,7 +106,7 @@ class RegisterUserServiceTest {
         when(validationService.userExists(anyString())).thenReturn(true);
 
         assertThrows(AlreadyExistException.class, () ->
-                registerUserService.createNewUser(registrationRequest)
+                registerUserService.createNewUser(registrationRequest, mockRequest)
         );
 
         verify(validationService).userExists("test@example.com");

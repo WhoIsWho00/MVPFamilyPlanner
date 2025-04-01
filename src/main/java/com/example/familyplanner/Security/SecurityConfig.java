@@ -34,16 +34,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Swagger UI access
+
                         .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/index.html").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
+                        .requestMatchers("/api-docs").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                                       
                         // API endpoints
                         .requestMatchers("/api/auth/sign-up").permitAll()
                         .requestMatchers("/api/auth/sign-in").permitAll()
+                        .requestMatchers("/api/auth/forgot-password").permitAll()
+                        .requestMatchers("/api/auth/reset-password").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         // tasks endpoint
                         .requestMatchers("/api/tasks/**").authenticated()
+                        .requestMatchers("/api/tasks").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

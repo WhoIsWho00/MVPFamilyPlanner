@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -76,10 +78,7 @@ public class TaskService {
 
 
 
-
-
-
-   /* public void updateTaskDescription(UUID taskId, String newDescription, String email) {
+    public void updateTaskDescription(UUID taskId, String newDescription, String email) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
 
@@ -94,8 +93,9 @@ public class TaskService {
 
         task.setDescription(newDescription);
         taskRepository.save(task);
-    }   */
+    }   
 
+  
     public void toggleTaskCompletion(UUID taskId, String email) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
@@ -114,5 +114,10 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+
+    public List<TaskResponseDto> getTasksBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Task> taskList = taskRepository.findByDueDateBetween(startDate, endDate);
+        return taskConverter.convertTasksToDto(taskList);
+    }
 
 }
