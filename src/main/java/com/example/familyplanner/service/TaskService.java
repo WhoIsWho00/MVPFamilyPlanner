@@ -2,6 +2,7 @@ package com.example.familyplanner.service;
 
 import com.example.familyplanner.dto.requests.TaskRequest;
 import com.example.familyplanner.dto.responses.TaskResponseDto;
+import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.TaskRepository;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -76,7 +78,7 @@ public class TaskService {
     }
 
 
-    public List<TaskResponseDto> getTasksBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<TaskResponseInCalendarDto> getTasksBetweenDates(LocalDate startDate, LocalDate endDate) {
         List<Task> taskList = taskRepository.findByDueDateBetween(startDate, endDate);
         return taskConverter.convertTasksToDto(taskList);
     }

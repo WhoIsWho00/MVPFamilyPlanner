@@ -3,6 +3,7 @@ package com.example.familyplanner.controller;
 import com.example.familyplanner.dto.requests.TaskRequest;
 import com.example.familyplanner.dto.responses.TaskResponseDto;
 
+import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -30,10 +32,76 @@ import java.util.UUID;
 
         private final TaskService taskService;
 
+
+    @Operation(
+            summary = "Get tasks for calendar",
+            description = "Retrieves a list of tasks sorted from date of start to deadline",
+            security = @SecurityRequirement(name = "JWT"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful operation",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                                "message": "tasks successfully retrieved",
+                                            }
+                                            """
+                            ))),
+
+                    @ApiResponse(responseCode = "401", description = "Unauthorized (authentication required)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 401,
+                          "error": "Unauthorized",
+                          "message": "Authentication required. Please log in.",
+                          "path": "/api/tasks"
+                        }
+                        """
+
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (insufficient permissions)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 403,
+                          "error": "Forbidden",
+                          "message": "You do not have permission to access these tasks.",
+                          "path": "/api/tasks"
+                        }
+                        """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            )))
+            }
+    )
         @GetMapping("/calendar")
-        public ResponseEntity<List<TaskResponseDto>> getTasksByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startDate,
-                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endDate) {
-            List<TaskResponseDto> tasksBetweenDates= taskService.getTasksBetweenDates(startDate, endDate);
+        public ResponseEntity<List<TaskResponseInCalendarDto>> getTasksByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                                                                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+            List<TaskResponseInCalendarDto> tasksBetweenDates= taskService.getTasksBetweenDates(startDate, endDate);
             return ResponseEntity.ok(tasksBetweenDates);
 
         }
@@ -255,8 +323,73 @@ import java.util.UUID;
         return ResponseEntity.ok("Task created successfully");
     }
 
+
+    @Operation(
+            summary = "Delete Task",
+            description = "Delete Task by it's unique id. Access only for authorized User",
+            security = @SecurityRequirement(name = "JWT"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful operation",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                                "message": "Task successfully deleted",
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized (authentication required)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 401,
+                          "error": "Unauthorized",
+                          "message": "Authentication required. Please log in.",
+                          "path": "/api/tasks"
+                        }
+                        """
+
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (insufficient permissions)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                        {
+                          "timestamp": "2025-03-25T16:26:19.597Z",
+                          "status": 403,
+                          "error": "Forbidden",
+                          "message": "You do not have permission to access these tasks.",
+                          "path": "/api/tasks"
+                        }
+                        """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            )))
+            }
+    )
     @DeleteMapping
-    public ResponseEntity<String> deleteTask(@RequestParam UUID id){
+    public ResponseEntity<String> deleteTaskById(@RequestParam UUID id){
             taskService.deleteTask(id);
             return ResponseEntity.ok("Task deleted successfully");
     }

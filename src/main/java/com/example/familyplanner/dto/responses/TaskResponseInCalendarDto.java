@@ -7,14 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Task data transfer object")
-public class TaskResponseDto {
+public class TaskResponseInCalendarDto {
+
     @Schema(description = "Task unique identifier", example = "123e4567-e89b-12d3-a456-426614174000")
     private UUID id;
 
@@ -40,9 +40,6 @@ public class TaskResponseDto {
 
     @Schema(description = "User who created the task")
     private UserResponseDto createdBy;
-
-    @Schema(description = "Family ID the task belongs to")
-    private UUID familyId;
 
     @Schema(description = "Task priority (1-5, where 5 is highest)", example = "3")
     private Integer priority;
