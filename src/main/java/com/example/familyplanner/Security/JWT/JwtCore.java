@@ -45,7 +45,7 @@ public class JwtCore {
             return true;
 
         } catch (JwtException e) {
-            return false;
+            throw new InvalidJwtException("Invalid JWT token");
         }
     }
 

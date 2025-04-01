@@ -1,6 +1,7 @@
 package com.example.familyplanner.service.converter;
 
 import com.example.familyplanner.dto.responses.TaskResponseDto;
+import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -40,26 +41,32 @@ public class TaskConverter {
         return dto;
     }
 
-    public List<TaskResponseDto> convertTasksToDto(List<Task> taskList) {
+    public List<TaskResponseInCalendarDto> convertTasksToDto(List<Task> taskList) {
         if(taskList == null ) {
-            return null;
+            throw new NullPointerException("taskList is null");
         }
-        List<TaskResponseDto> dtoList = new ArrayList<>();
+
+        List<TaskResponseInCalendarDto> dtoList = new ArrayList<>();
+
         for (Task task : taskList) {
-            TaskResponseDto dto = convertToDto(task);
+            TaskResponseInCalendarDto dto = new TaskResponseInCalendarDto();
+
             dto.setId(task.getId());
             dto.setTitle(task.getTitle());
             dto.setDescription(task.getDescription());
             dto.setDueDate(task.getDueDate());
             dto.setCreatedAt(task.getCreatedAt());
             dto.setCompleted(task.isCompleted());
-            dto.setFamilyId(task.getFamilyId());
+//            dto.setFamilyId(task.getFamilyId());
             dto.setPriority(task.getPriority());
+
+
 
             if (task.getAssignedTo() != null) {
                 dto.setAssignedTo(userConverter.createDtoFromUser(task.getAssignedTo()));
             }
 
+            dtoList.add(dto);
         }
 
         return dtoList;

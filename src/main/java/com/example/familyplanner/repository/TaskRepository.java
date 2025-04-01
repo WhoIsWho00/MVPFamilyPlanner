@@ -1,5 +1,6 @@
 package com.example.familyplanner.repository;
 
+import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +27,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     Page<Task> findByCreatedBy(User user, Pageable pageable);
 
-    List<Task> findByDueDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Task> findByDueDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT t FROM Task t WHERE " +
             "(:familyId IS NULL OR t.familyId = :familyId) AND " +
