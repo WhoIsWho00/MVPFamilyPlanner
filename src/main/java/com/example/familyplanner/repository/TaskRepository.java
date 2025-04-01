@@ -1,6 +1,7 @@
 package com.example.familyplanner.repository;
 
 import com.example.familyplanner.entity.Task;
+import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
@@ -29,11 +30,13 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("SELECT t FROM Task t WHERE " +
             "(:familyId IS NULL OR t.familyId = :familyId) AND " +
             "(:completed IS NULL OR t.completed = :completed) AND " +
+            "(:status IS NULL OR t.status = :status) AND " +
             "(:userId IS NULL OR t.assignedTo.id = :userId) AND " +
             "(:priority IS NULL OR t.priority = :priority)")
     Page<Task> findTasksWithFilters(
             @Param("familyId") UUID familyId,
             @Param("completed") Boolean completed,
+            @Param("status") TaskStatus status,
             @Param("userId") UUID userId,
             @Param("priority") Integer priority,
             Pageable pageable);

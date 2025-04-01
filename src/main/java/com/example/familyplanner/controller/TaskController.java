@@ -2,7 +2,7 @@ package com.example.familyplanner.controller;
 
 import com.example.familyplanner.dto.requests.TaskRequest;
 import com.example.familyplanner.dto.responses.TaskResponseDto;
-
+import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -107,6 +107,8 @@ import java.util.UUID;
     public ResponseEntity<Page<TaskResponseDto>> getTasks(
             @Parameter(description = "Filter by family ID") @RequestParam(required = false) UUID familyId,
             @Parameter(description = "Filter by completion status") @RequestParam(required = false) Boolean completed,
+            @Parameter(description = "Filter by task status (NEW, IN_PROGRESS, COMPLETED, CANCELLED)")
+                @RequestParam(required = false) TaskStatus status,
             @Parameter(description = "Filter by assigned user ID") @RequestParam(required = false) UUID assignedTo,
             @Parameter(description = "Filter by priority level (1-5)") @RequestParam(required = false) Integer priority,
             @Parameter(description = "Page number (0-based)") @RequestParam(defaultValue = "0") int page,
@@ -115,7 +117,7 @@ import java.util.UUID;
             @Parameter(description = "Sort direction (ASC or DESC)") @RequestParam(defaultValue = "DESC") String direction) {
 
         Page<TaskResponseDto> tasks = taskService.getTasks(
-                familyId, completed, assignedTo, priority, page, size, sortBy, direction);
+                familyId, completed, status, assignedTo, priority, page, size, sortBy, direction);
 
         return ResponseEntity.ok(tasks);
     }
@@ -125,7 +127,12 @@ import java.util.UUID;
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Task successfully found",
+
+                    @ApiResponse(responseCode = "200", description = "Successful operation"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Task not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error"),
+                    @ApiResponse(responseCode = "201", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
@@ -258,6 +265,24 @@ import java.util.UUID;
 
         return ResponseEntity.ok("Task created successfully");
     }
+    @Operation(
+            summary = "Update task status",
+            description = "Updates the status of a specific task",
+            security = @SecurityRequirement(name = "JWT"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Task status updated successfully"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Task not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TaskResponseDto> updateTaskStatus(
+            @Parameter(description = "Task ID", required = true) @PathVariable UUID id,
+            @Parameter(description = "New status", required = true) @RequestParam TaskStatus status) {
 
+        TaskResponseDto updatedTask = taskService.updateTaskStatus(id, status);
+        return ResponseEntity.ok(updatedTask);
     }
+}
 

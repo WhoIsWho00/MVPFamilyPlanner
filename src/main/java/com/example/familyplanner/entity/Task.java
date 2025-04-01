@@ -34,6 +34,10 @@ public class Task {
     @Column(name = "completed")
     private boolean completed;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TaskStatus status;
+
     @ManyToOne
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
@@ -51,5 +55,22 @@ public class Task {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (status == null) {
+            status = TaskStatus.NEW;
+    }
+}
+
+public void setCompleted(boolean completed) {
+    this.completed = completed;
+    if (completed) {
+        this.status = TaskStatus.COMPLETED;
+    } else if (this.status == TaskStatus.COMPLETED) {
+        // Якщо статус був COMPLETED, а completed стає false, встановлюємо IN_PROGRESS
+        this.status = TaskStatus.IN_PROGRESS;
+    }
+}
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+        this.completed = (status == TaskStatus.COMPLETED);
     }
 }
