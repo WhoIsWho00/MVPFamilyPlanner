@@ -98,7 +98,7 @@ public class SecurityControllerTest {
         validRegistrationRequest.setEmail("test@example.com");
         validRegistrationRequest.setPassword("Test!123");
         validRegistrationRequest.setAge(25);
-        validRegistrationRequest.setAvatarId("testAvatarId");
+        validRegistrationRequest.setAvatarId("avatar1");
 
         Role userRole = new Role();
         userRole.setId(UUID.randomUUID());
@@ -146,7 +146,7 @@ public class SecurityControllerTest {
 
     @Test
     void registerUser_WithValidData_ReturnsCreatedUser() throws Exception {
-//        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 
         when(registerUserService.createNewUser(any(RegistrationRequest.class), any(HttpServletRequest.class)))
                 .thenReturn(userResponseDto);

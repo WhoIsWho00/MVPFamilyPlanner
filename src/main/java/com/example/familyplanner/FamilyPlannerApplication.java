@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //@EnableJpaRepositories("com.example.familyplanner.repository")
 public class FamilyPlannerApplication {
 
+
 	private JwtCore jwtCore;
 
 	@Autowired
