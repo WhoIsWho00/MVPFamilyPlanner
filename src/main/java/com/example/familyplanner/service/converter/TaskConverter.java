@@ -27,16 +27,16 @@ public class TaskConverter {
         dto.setDueDate(task.getDueDate());
         dto.setCreatedAt(task.getCreatedAt());
         dto.setCompleted(task.isCompleted());
+        dto.setStatus(task.getStatus());
         dto.setFamilyId(task.getFamilyId());
         dto.setPriority(task.getPriority());
 
         if (task.getAssignedTo() != null) {
             dto.setAssignedTo(userConverter.createDtoFromUser(task.getAssignedTo()));
         }
-
-//        if (task.getCreatedBy() != null) {
-//            dto.setCreatedBy(userConverter.createDtoFromUser(task.getCreatedBy()));
-//        }
+        if (task.getCreatedBy() != null) {
+            dto.setCreatedBy(userConverter.createDtoFromUser(task.getCreatedBy()));
+        }
 
         return dto;
     }

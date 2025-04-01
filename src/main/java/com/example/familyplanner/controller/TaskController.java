@@ -103,8 +103,7 @@ import java.util.UUID;
             return ResponseEntity.ok(tasksBetweenDates);
 
         }
-
-
+      
 //    @Operation(
 //            summary = "Get tasks with pagination and filtering",
 //            description = "Retrieves a paginated list of tasks with optional filtering",
@@ -187,7 +186,12 @@ import java.util.UUID;
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Task successfully found",
+
+                    @ApiResponse(responseCode = "200", description = "Successful operation"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Task not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error"),
+                    @ApiResponse(responseCode = "201", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
@@ -320,6 +324,21 @@ import java.util.UUID;
 
         return ResponseEntity.ok("Task created successfully");
     }
+    @Operation(
+            summary = "Update task status",
+            description = "Updates the status of a specific task",
+            security = @SecurityRequirement(name = "JWT"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Task status updated successfully"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Task not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TaskResponseDto> updateTaskStatus(
+            @Parameter(description = "Task ID", required = true) @PathVariable UUID id,
+            @Parameter(description = "New status", required = true) @RequestParam TaskStatus status) {
 
 
     @Operation(
@@ -391,6 +410,6 @@ import java.util.UUID;
             taskService.deleteTask(id);
             return ResponseEntity.ok("Task deleted successfully");
     }
-
-    }
+    
+}
 

@@ -1,5 +1,6 @@
 package com.example.familyplanner.dto.responses;
 
+import com.example.familyplanner.entity.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,9 @@ public class TaskResponseDto {
 
     @Schema(description = "Task completion status", example = "false")
     private boolean completed;
+
+    @Schema(description = "Task status", example = "IN_PROGRESS")
+    private TaskStatus status;
 
     @Schema(description = "User assigned to the task")
     private UserResponseDto assignedTo;

@@ -4,6 +4,7 @@ import com.example.familyplanner.dto.requests.TaskRequest;
 import com.example.familyplanner.dto.responses.TaskResponseDto;
 import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
+import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.TaskRepository;
 import com.example.familyplanner.repository.UserRepository;
@@ -35,6 +36,7 @@ public class TaskService {
     public Page<TaskResponseDto> getTasks(
             UUID familyId,
             Boolean completed,
+            TaskStatus status,
             UUID assignedTo,
             Integer priority,
             int page,
@@ -52,10 +54,11 @@ public class TaskService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Task> taskPage = taskRepository.findTasksWithFilters(
-                familyId, completed, assignedTo, priority, pageable);
+                familyId, completed, status, assignedTo, priority, pageable);
 
         return taskPage.map(taskConverter::convertToDto);
     }
+
     public TaskResponseDto getTaskById(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found with ID: " + id));
@@ -73,8 +76,27 @@ public class TaskService {
         task.setDueDate(request.getDueDate());
         task.setAssignedTo(user);
         task.setCreatedBy(user);
+        task.setPriority(request.getPriority());
+
+        // Встановлюємо статус з запиту або за замовчуванням NEW
+        if (request.getStatus() != null) {
+            task.setStatus(request.getStatus());
+        } else {
+            task.setStatus(TaskStatus.NEW);
+        }
 
         taskRepository.save(task);
+    }
+
+
+    public TaskResponseDto updateTaskStatus(UUID taskId, TaskStatus status) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
+
+        task.setStatus(status);
+        Task updatedTask = taskRepository.save(task);
+
+        return taskConverter.convertToDto(updatedTask);
     }
 
 
