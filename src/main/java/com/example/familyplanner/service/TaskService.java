@@ -109,6 +109,7 @@ public class TaskService {
         if (id == null) {
             throw new NotFoundException("Task not found with ID: " + id);
         }
+
         taskRepository.deleteById(id);
     }
 }
