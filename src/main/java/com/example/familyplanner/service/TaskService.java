@@ -80,4 +80,11 @@ public class TaskService {
         List<Task> taskList = taskRepository.findByDueDateBetween(startDate, endDate);
         return taskConverter.convertTasksToDto(taskList);
     }
+
+    public void deleteTask(UUID id) {
+        if (id == null) {
+            throw new NotFoundException("Task not found with ID: " + id);
+        }
+        taskRepository.deleteById(id);
+    }
 }

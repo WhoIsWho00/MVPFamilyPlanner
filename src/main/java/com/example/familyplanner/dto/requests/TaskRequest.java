@@ -22,6 +22,7 @@ public class TaskRequest {
     private String description;
 
     @Schema(description = "Due date for the task in format YYYY-MM-DD", example = "2025-03-31")
+    @NotBlank
     //время только в виде даты приходит. Без времени
     private LocalDateTime dueDate;
 
