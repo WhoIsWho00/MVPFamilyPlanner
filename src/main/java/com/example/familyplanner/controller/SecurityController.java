@@ -40,7 +40,7 @@ public class SecurityController {
     private final FindUserService findUserService;
     private final PasswordResetService passwordResetService;
 
-    @PostMapping("/sign-in")
+
     @Operation(
             summary = "Authenticate user",
             description = "Authenticates user and returns JWT token along with user info",
@@ -96,7 +96,7 @@ public class SecurityController {
                                             """
                     )))})
 
-  
+        @PostMapping("/sign-in")
         public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(

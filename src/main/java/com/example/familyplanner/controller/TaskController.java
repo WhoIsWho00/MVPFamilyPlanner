@@ -262,12 +262,7 @@ import java.util.UUID;
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-                                              "task": {
-                                                "id": 2,
-                                                "title": "new_task",
-                                              },
-                                              "message": "Task successfully created",
-                                              "status": "success"
+
                                             }
                                             """
                             ))),
