@@ -24,4 +24,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<Map<String, Object>> handleAlreadyExist(
+            AlreadyExistException ex, HttpServletRequest request) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", 409);
+        body.put("error", "Conflict");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getRequestURI());
+
+        return ResponseEntity.status(409).body(body);
+    }
+
+
 }

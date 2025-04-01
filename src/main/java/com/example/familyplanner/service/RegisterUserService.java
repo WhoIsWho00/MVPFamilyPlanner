@@ -21,7 +21,7 @@ public class RegisterUserService {
 
     public UserResponseDto createNewUser(RegistrationRequest request) {
         if (validation.userExists(request.getEmail())) {
-            throw new AlreadyExistException("User with email " + request.getEmail() + " already exists");
+            throw new ValidationService.EmailAlreadyExistsException("Email already registered");
         }
 
         User newUser = converter.createUserFromDto(request);
