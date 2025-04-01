@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Autowired

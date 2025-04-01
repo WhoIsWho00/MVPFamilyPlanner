@@ -23,7 +23,7 @@ public class RegistrationRequest {
         private String username;
 
         @NotBlank(message = "Email cannot be empty")
-        @Email(message = "Invalid email format")
+//        @Email(message = "Invalid email format")
         @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
                 message = "Email must be a valid email address with a proper domain")
         @Size(max = 40, message = "Email cannot be longer than 40 characters")
@@ -41,8 +41,7 @@ public class RegistrationRequest {
 
         @NotBlank(message = "Avatar must not be empty")
         @Schema(description = "User's chosen avatar identifier", example = "avatar1", required = true)
-        @Pattern(regexp = "^avatar[1-6]$", message = "Invalid avatar ID. Must be between avatar1 and avatar6")=======
-        @Schema(description = "User's chosen avatar identifier", example = "avatar1")
+        @Pattern(regexp = "^avatar[1-6]$", message = "Invalid avatar ID. Must be between avatar1 and avatar6")
         @Column(name = "avatar_id")
         @NotBlank
         private String avatarId;

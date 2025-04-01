@@ -28,7 +28,7 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("Password@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertTrue(violations.isEmpty());
     }
@@ -40,7 +40,7 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("Password@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username must not contain any special characters"));
@@ -53,7 +53,7 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("Password@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username should have at least 2 symbols"));
@@ -66,7 +66,7 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("Password@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Username can't be more than 15 symbols"));
@@ -79,10 +79,10 @@ class RegistrationRequestTest {
         request.setEmail("invalid-email");
         request.setPassword("Password@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
-        assertTrue(violations.iterator().next().getMessage().contains("invalid Email format"));
+        assertTrue(violations.iterator().next().getMessage().contains("Email must be a valid email address with a proper domain"));
     }
 
     @Test
@@ -92,10 +92,10 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("Password1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
-        assertTrue(violations.iterator().next().getMessage().contains("Password must contain at least one special character"));
+        assertTrue(violations.iterator().next().getMessage().contains("Password must contain at least one digit, one lowercase letter, one uppercase letter, and one special character"));
     }
 
     @Test
@@ -103,9 +103,9 @@ class RegistrationRequestTest {
         RegistrationRequest request = new RegistrationRequest();
         request.setUsername("JohnDoe");
         request.setEmail("john@example.com");
-        request.setPassword("P@1");
+        request.setPassword("Pp@1");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
         assertTrue(violations.iterator().next().getMessage().contains("Password should have at least 8 symbols"));
@@ -118,10 +118,10 @@ class RegistrationRequestTest {
         request.setEmail("john@example.com");
         request.setPassword("P@sswordThatIsWayTooLong1234567");
         request.setAge(25);
-        request.setAvatarId("testAvatarId");
+        request.setAvatarId("avatar1");
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size());
-        assertTrue(violations.iterator().next().getMessage().contains("Password cant be bigger than 25 symbols"));
+        assertTrue(violations.iterator().next().getMessage().contains("Password can't be longer than 25 symbols"));
     }
 
 
