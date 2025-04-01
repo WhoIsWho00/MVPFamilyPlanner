@@ -39,14 +39,13 @@ public class JwtCore {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
-                    .parseClaimsJws(token); // ✅ Используем parseClaimsJws, а не parseClaimsJwt
-
+                    .parseClaimsJws(token);
             return true;
-
         } catch (JwtException e) {
-            throw new InvalidJwtException("Invalid JWT token: " + e.getMessage());
+            return false; // ✅ вместо throw new InvalidJwtException(...)
         }
     }
+
 
     public String getUserNameFromJwt(String token) {
         Claims claims = Jwts.parserBuilder()

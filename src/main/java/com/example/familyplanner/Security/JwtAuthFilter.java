@@ -29,21 +29,32 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        String path = request.getServletPath();
+
+        // Пропустить JWT для публичных маршрутов
+        if (path.startsWith("/api/auth/") || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String jwt = parseJwt(request);
+
             if (jwt != null && jwtCore.validateToken(jwt)) {
                 String email = jwtCore.getUserNameFromJwt(jwt);
                 UserDetails userDetails = userService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
         } catch (Exception e) {
-            logger.error("Failed to authenticate user: {}", e);
-            // Not passing error details to the client for security
+            logger.warn("JWT token validation failed: ", e);
+
         }
 
         filterChain.doFilter(request, response);
