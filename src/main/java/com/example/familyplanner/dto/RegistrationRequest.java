@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegistrationRequest {
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Username must not contain any special characters")
+        @Pattern(regexp = "^[a-zA-Z0-9-_]{3,20}$", message = "Username can only contain letters, numbers, dashes, and underscores")
         //^ — начало строки
         //[a-zA-Z0-9]+ — только латинские буквы и цифры, не менее одного символа
         //$ — конец строки
