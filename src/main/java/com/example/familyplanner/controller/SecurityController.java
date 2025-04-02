@@ -336,4 +336,10 @@ public class SecurityController {
 
         return ResponseEntity.ok(responseDto);
     }
+
+    @PostMapping
+    public ResponseEntity<String> handleInvalidAuthRequest() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("The endpoint you are trying to reach does not exist.");
+    }
 }

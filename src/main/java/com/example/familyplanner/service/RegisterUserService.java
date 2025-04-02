@@ -12,6 +12,7 @@ import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.AlreadyExistException;
 import com.example.familyplanner.service.exception.ExcessRegistrationLimitException;
 import com.example.familyplanner.service.exception.NotFoundException;
+import com.example.familyplanner.service.exception.UserAlreadyExistException;
 import com.example.familyplanner.service.validation.ValidationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class RegisterUserService {
         }
 
         if (validation.userExists(request.getEmail())) {
-            throw new AlreadyExistException("User with email " + request.getEmail() + " already exists");
+            throw new UserAlreadyExistException("User with email " + request.getEmail() + " already exists");
         }
         User newUser = converter.createUserFromDto(request);
         User savedUser = userRepository.save(newUser);

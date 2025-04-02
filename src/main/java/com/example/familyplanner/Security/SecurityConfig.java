@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/sign-in").permitAll()
                         .requestMatchers("/api/auth/forgot-password").permitAll()
                         .requestMatchers("/api/auth/reset-password").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         // tasks endpoint
                         .requestMatchers("/api/tasks/**").authenticated()

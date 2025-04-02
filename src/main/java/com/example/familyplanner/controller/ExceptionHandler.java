@@ -111,8 +111,13 @@ public class ExceptionHandler {
                 .body(response);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({AccessDeniedException.class})
+    @org.springframework.web.bind.annotation.ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<String> handleAccessDeniedException(UserAlreadyExistException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 }
