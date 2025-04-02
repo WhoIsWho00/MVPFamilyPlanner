@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 //Главна задача этого сервиса состоит в том, чтобы находить пользователя по email при попытке аутентификации.
 //В случае успеха - возвращает преобразованного пользователя в понятном формате для Spring Security
@@ -27,5 +29,12 @@ public class UserService implements UserDetailsService {
                 ));
 
         return UserDetailImpl.build(user);
+    }
+
+    public void deleteUserById(UUID id){
+        if(id == null){
+            throw new UsernameNotFoundException("User not found");
+        }
+        userRepository.deleteById(id);
     }
 }

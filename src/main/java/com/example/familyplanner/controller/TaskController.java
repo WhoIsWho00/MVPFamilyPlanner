@@ -1,8 +1,9 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.requests.TaskRequest;
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.requests.task.TaskRequest;
+import com.example.familyplanner.dto.requests.task.UpdateTaskDetailsRequest;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -165,7 +166,7 @@ import java.util.UUID;
 //            }
 //    )
 //    @GetMapping
-    //вернуть список задач. Искать их по id
+////    вернуть список задач. Искать их по id
 //    public ResponseEntity<Page<TaskResponseDto>> getTasks(
 //            @Parameter(description = "Filter by family ID") @RequestParam(required = false) UUID familyId,
 //            @Parameter(description = "Filter by completion status") @RequestParam(required = false) Boolean completed,
@@ -187,7 +188,7 @@ import java.util.UUID;
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Task successfully found",
+                    @ApiResponse(responseCode = "200", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
@@ -322,7 +323,7 @@ import java.util.UUID;
     }
     @Operation(
             summary = "Update task status",
-            description = "Updates the status of a specific task",
+            description = "Updates the status(completed/not completed) of a specific task",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Task successfully updated",
@@ -449,6 +450,15 @@ import java.util.UUID;
         public ResponseEntity<String> deleteTaskById (@RequestParam UUID id){
             taskService.deleteTask(id);
             return ResponseEntity.ok("Task deleted successfully");
+        }
+
+        @PutMapping
+        public ResponseEntity<TaskResponseDto> updateTaskDetails(@RequestParam UUID taskId,
+                                                                 @RequestBody UpdateTaskDetailsRequest request,
+                                                                 @RequestParam String email) {
+
+        TaskResponseDto updatedTask = taskService.updateTaskDetailsById(taskId, request, email);
+        return ResponseEntity.ok(updatedTask);
         }
     }
 
