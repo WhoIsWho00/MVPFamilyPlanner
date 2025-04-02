@@ -1,17 +1,24 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.responses.ErrorResponseDto;
-import com.example.familyplanner.service.exception.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.example.familyplanner.dto.responses.ErrorResponseDto;
+import com.example.familyplanner.service.exception.AlreadyExistException;
+import com.example.familyplanner.service.exception.ExcessRegistrationLimitException;
+import com.example.familyplanner.service.exception.ExpiredTokenException;
+import com.example.familyplanner.service.exception.InvalidTokenException;
+import com.example.familyplanner.service.exception.NotFoundException;
+import com.example.familyplanner.service.exception.UserAlreadyExistException;
+import com.example.familyplanner.service.exception.ValidationException;
 
 @ControllerAdvice
 public class ExceptionHandler {
@@ -40,17 +47,6 @@ public class ExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
-//    @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getAllErrors().forEach((error) -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
-//        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-//    }
-  
     @org.springframework.web.bind.annotation.ExceptionHandler({
             NotFoundException.class,
             AlreadyExistException.class,
@@ -111,8 +107,8 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<String> handleExcessRegistrationLimitException(UserAlreadyExistException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
 }
