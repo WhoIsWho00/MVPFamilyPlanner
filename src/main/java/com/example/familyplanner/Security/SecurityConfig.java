@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         // API endpoints
-                        .requestMatchers(HttpMethod.POST,"/api/auth/sign-up").permitAll()
+                        .requestMatchers("/api/auth/sign-up").permitAll()
                         .requestMatchers("/api/auth/sign-in").permitAll()
                         .requestMatchers("/api/auth/forgot-password").permitAll()
                         .requestMatchers("/api/auth/reset-password").permitAll()
