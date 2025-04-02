@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityController {
 
 
-    //Возрващать DTO
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -117,10 +116,10 @@ public class SecurityController {
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
-                            )))})
-
-        public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+                            )))
+                    }
+            )
+    @PostMapping("/sign-in")
     public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             // Спочатку перевіряємо, чи існує користувач
@@ -231,7 +230,8 @@ public class SecurityController {
                                               "path": "/api/auth/sign-up"
                                             }
                                             """
-                            )))}
+                            )))
+            }
     )
 
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
@@ -297,7 +297,8 @@ public class SecurityController {
                                               "path": "/api/auth/forgot-password"
                                             }
                                             """
-                            )))}
+                            )))
+            }
     )
     public ResponseEntity<PasswordResetRequestResponseDto> forgotPassword(@Valid @RequestBody PasswordResetRequest request) {
         try {

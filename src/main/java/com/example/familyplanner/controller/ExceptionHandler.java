@@ -110,4 +110,9 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<String> handleExcessRegistrationLimitException(UserAlreadyExistException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
 }
