@@ -37,7 +37,7 @@ public class ExceptionHandler {
     }
   
     @org.springframework.web.bind.annotation.ExceptionHandler(ExcessRegistrationLimitException.class)
-    public ResponseEntity<String> handleExcessRegistrationLimitException(NullPointerException e) {
+    public ResponseEntity<String> handleExcessRegistrationLimitException(ExcessRegistrationLimitException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
