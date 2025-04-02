@@ -5,6 +5,8 @@ import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.UserConverter;
 import com.example.familyplanner.service.exception.NotFoundException;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +20,17 @@ public class FindUserService {
     private final UserConverter converter;
 
 
-    public List<UserResponseDto> findAll(){
+    public List<UserResponseDto> findAll() {
         return userRepository.findAll().stream()
                 .map(manager -> converter.createDtoFromUser(manager))
                 .toList();
     }
 
-    public UserResponseDto findUserByEmail(String email){
+    public UserResponseDto findUserByEmail(String email) {
 
         Optional<User> userOptional = userRepository.findByEmail(email);
 
-        if (userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             UserResponseDto response = converter.createDtoFromUser(userOptional.get());
             return response;
         } else {
@@ -36,8 +38,20 @@ public class FindUserService {
         }
     }
 
-    public List<User> findAllFullDetails(){
+    public List<User> findAllFullDetails() {
         return userRepository.findAll();
     }
+
+    public boolean existsByEmail(String email) {
+        try {
+            userRepository.findByEmail(email)
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
+
+    }
+
 
 }
