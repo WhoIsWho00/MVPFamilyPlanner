@@ -1,32 +1,107 @@
-//package com.example.familyplanner.controller;
-//
-//import com.example.familyplanner.dto.requests.UpdateProfileRequest;
-//import com.example.familyplanner.dto.responses.UserResponseDto;
-//import com.example.familyplanner.service.RegisterUserService;
-//import io.swagger.v3.oas.annotations.Operation;
-//import io.swagger.v3.oas.annotations.media.Content;
-//import io.swagger.v3.oas.annotations.media.ExampleObject;
-//import io.swagger.v3.oas.annotations.responses.ApiResponse;
-//import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-//
-//import jakarta.validation.Valid;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.security.Principal;
-//
-//
-//@RestController
-//@RequiredArgsConstructor
-//@RequestMapping("/api/users")
-//public class UserController {
-//
+package com.example.familyplanner.controller;
+
+import com.example.familyplanner.dto.requests.UpdateProfileRequest;
+import com.example.familyplanner.dto.requests.signInUp.RegistrationRequest;
+import com.example.familyplanner.dto.responses.UserResponseDto;
+import com.example.familyplanner.repository.UserRepository;
+import com.example.familyplanner.service.FindUserService;
+import com.example.familyplanner.service.RegisterUserService;
+import com.example.familyplanner.service.TaskService;
+import com.example.familyplanner.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
+
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/users")
+public class UserController {
+
 //    private final FindUserService findService;
 //    private final RegisterUserService registerService;
+    private final UserService userService;
 //    private final TaskService taskService;
-//
+
+    @Operation(summary = "Delete user", description = "Delete user by its specific id",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful operation",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                               {
+                                                    "message": "User successfully deleted",
+                                                }
+                                               """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized (authentication required)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                               {
+                                                  "timestamp": "2025-03-25T16:26:19.597Z",
+                                                  "status": 401,
+                                                 "error": "Unauthorized",
+                                                 "message": "Authentication required. Please log in.",
+                                                 "path": "/api/users"
+                                               }
+                                               """
+                            ))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden (insufficient permissions)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                               {
+                                                 "timestamp": "2025-03-25T16:26:19.597Z",
+                                                "status": 403,
+                                                 "error": "Forbidden",
+                                                 "message": "You do not have permission to access that user.",
+                                                 "path": "/api/users"
+                                               }
+                                               """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                              {
+                                                  "timestamp": "2025-03-25T16:26:19.597Z",
+                                                 "status": 404,
+                                                 "error": "Not Found",
+                                                  "message": "",
+                                                  "path": "/api/users"
+                                                }
+                                              """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                               {
+                                                 "timestamp": "2025-03-25T16:26:19.597Z",
+                                                  "status": 500,
+                                                 "error": "Internal Server Error",
+                                                 "message": "An unexpected error occurred.",
+                                                 "path": "/api/users"
+                                               }
+                                               """
+                            )))
+            }
+    )
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteUserById(@RequestParam UUID  id){
+        userService.deleteUserById(id);
+        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
+    }
+
 //    @Operation(
 //            summary = "Create user",
 //                description = "Create user. Store him in DataBase, and return in response only non confidential info",
@@ -141,5 +216,5 @@
 //
 //        return ResponseEntity.ok(updatedUser);
 //    }
-//}
-//
+}
+

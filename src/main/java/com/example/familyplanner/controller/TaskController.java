@@ -1,8 +1,8 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.requests.TaskRequest;
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.requests.task.TaskRequest;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;

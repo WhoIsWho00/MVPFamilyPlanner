@@ -1,8 +1,8 @@
 package com.example.familyplanner.controller;
 
 import com.example.familyplanner.Security.JWT.JwtCore;
-import com.example.familyplanner.dto.requests.LoginRequest;
-import com.example.familyplanner.dto.requests.RegistrationRequest;
+import com.example.familyplanner.dto.requests.signInUp.LoginRequest;
+import com.example.familyplanner.dto.requests.signInUp.RegistrationRequest;
 import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.Role;
 import com.example.familyplanner.repository.UserRepository;

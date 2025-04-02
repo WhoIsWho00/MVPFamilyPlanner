@@ -1,6 +1,7 @@
-package com.example.familyplanner.dto.responses;
+package com.example.familyplanner.dto.responses.signInUp;
 
 
+import com.example.familyplanner.dto.responses.UserResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.example.familyplanner.dto.requests;
+package com.example.familyplanner.dto.requests.task;
 
 import com.example.familyplanner.entity.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

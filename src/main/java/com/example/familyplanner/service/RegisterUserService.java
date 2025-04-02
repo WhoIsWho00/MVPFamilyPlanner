@@ -1,7 +1,7 @@
 package com.example.familyplanner.service;
 
 import com.example.familyplanner.Other.IPAdressUtil.IpAddressUtil;
-import com.example.familyplanner.dto.requests.RegistrationRequest;
+import com.example.familyplanner.dto.requests.signInUp.RegistrationRequest;
 import com.example.familyplanner.dto.requests.UpdateProfileRequest;
 import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.User;
@@ -15,8 +15,6 @@ import com.example.familyplanner.service.exception.NotFoundException;
 import com.example.familyplanner.service.validation.ValidationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

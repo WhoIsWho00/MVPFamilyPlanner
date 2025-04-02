@@ -4,6 +4,7 @@ import com.example.familyplanner.dto.responses.ErrorResponseDto;
 import com.example.familyplanner.service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,7 +37,7 @@ public class ExceptionHandler {
     }
   
     @org.springframework.web.bind.annotation.ExceptionHandler(ExcessRegistrationLimitException.class)
-    public ResponseEntity<String> handleExcessRegistrationLimitException(NullPointerException e) {
+    public ResponseEntity<String> handleExcessRegistrationLimitException(ExcessRegistrationLimitException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
@@ -50,6 +51,16 @@ public class ExceptionHandler {
 //        });
 //        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 //    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("error", "Unauthorized");
+        response.put("message", "Invalid email or password");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
   
     @org.springframework.web.bind.annotation.ExceptionHandler({
             NotFoundException.class,

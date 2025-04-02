@@ -1,8 +1,8 @@
 package com.example.familyplanner.service;
 
-import com.example.familyplanner.dto.requests.TaskRequest;
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.requests.task.TaskRequest;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

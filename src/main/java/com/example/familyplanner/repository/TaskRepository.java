@@ -1,10 +1,8 @@
 package com.example.familyplanner.repository;
 
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

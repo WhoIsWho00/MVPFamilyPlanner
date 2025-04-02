@@ -1,6 +1,6 @@
 //package com.example.familyplanner.controller;
 //
-//import com.example.familyplanner.dto.requests.RegistrationRequest;
+//import com.example.familyplanner.dto.requests.signInUp.RegistrationRequest;
 //import com.example.familyplanner.dto.requests.UpdateProfileRequest;
 //import com.example.familyplanner.dto.responses.UserResponseDto;
 //import com.example.familyplanner.entity.Role;
