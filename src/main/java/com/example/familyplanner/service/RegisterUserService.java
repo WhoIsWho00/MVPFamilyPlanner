@@ -32,7 +32,7 @@ public class RegisterUserService {
     private final UserRegistrationLogRepository logRepository;
 
     private final IpAddressUtil ipAddressUtil;
-    private static final int MAX_REGISTRATIONS = 4;
+    private static final int MAX_REGISTRATIONS = 25;
     private static final int TIME_LIMIT_MINUTES = 10;
 
 
