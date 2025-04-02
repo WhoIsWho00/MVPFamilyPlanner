@@ -1,8 +1,9 @@
 package com.example.familyplanner.service;
 
-import com.example.familyplanner.dto.requests.TaskRequest;
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.requests.task.TaskRequest;
+import com.example.familyplanner.dto.requests.task.UpdateTaskDetailsRequest;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.entity.User;
@@ -10,6 +11,7 @@ import com.example.familyplanner.repository.TaskRepository;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.TaskConverter;
 
+import com.example.familyplanner.service.exception.AccessDeniedException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,8 +23,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -109,6 +111,36 @@ public class TaskService {
         if (id == null) {
             throw new NotFoundException("Task not found with ID: " + id);
         }
+
         taskRepository.deleteById(id);
     }
-}
+
+    public TaskResponseDto updateTaskDetailsById(UUID id, UpdateTaskDetailsRequest request, String email) {
+        Optional<Task> taskForUpdate = taskRepository.findById(id);
+        if(taskForUpdate.isEmpty()) {
+            throw new NotFoundException("Task not found with ID: " + id);}
+
+        Task task = taskForUpdate.get();
+
+        if(!task.getCreatedBy().getEmail().equals(email)) {
+            throw new AccessDeniedException("You are not allowed to update this task.");
+        }
+
+        if(request.getTitle() != null) {
+            task.setTitle(request.getTitle());}
+
+        if(request.getDescription() != null) {
+            task.setDescription(request.getDescription());}
+
+        if(request.getDueDate() != null) {
+            task.setDueDate(request.getDueDate());
+        }
+
+
+        taskRepository.save(task);
+
+        return taskConverter.convertToDto(task);
+
+        }
+
+    }

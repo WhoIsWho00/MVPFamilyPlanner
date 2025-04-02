@@ -1,4 +1,4 @@
-package com.example.familyplanner.dto.responses;
+package com.example.familyplanner.dto.responses.password;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

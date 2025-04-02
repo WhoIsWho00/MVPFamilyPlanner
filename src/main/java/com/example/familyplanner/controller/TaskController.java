@@ -1,8 +1,9 @@
 package com.example.familyplanner.controller;
 
-import com.example.familyplanner.dto.requests.TaskRequest;
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.requests.task.TaskRequest;
+import com.example.familyplanner.dto.requests.task.UpdateTaskDetailsRequest;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.TaskStatus;
 import com.example.familyplanner.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -165,7 +166,7 @@ import java.util.UUID;
 //            }
 //    )
 //    @GetMapping
-    //вернуть список задач. Искать их по id
+////    вернуть список задач. Искать их по id
 //    public ResponseEntity<Page<TaskResponseDto>> getTasks(
 //            @Parameter(description = "Filter by family ID") @RequestParam(required = false) UUID familyId,
 //            @Parameter(description = "Filter by completion status") @RequestParam(required = false) Boolean completed,
@@ -187,12 +188,7 @@ import java.util.UUID;
             description = "Retrieves a specific task by its ID",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-
-                    @ApiResponse(responseCode = "200", description = "Successful operation"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "Task not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error"),
-                    @ApiResponse(responseCode = "201", description = "Task successfully found",
+                    @ApiResponse(responseCode = "200", description = "Task successfully found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
@@ -322,13 +318,55 @@ import java.util.UUID;
     }
     @Operation(
             summary = "Update task status",
-            description = "Updates the status of a specific task",
+            description = "Updates the status(completed/not completed) of a specific task",
             security = @SecurityRequirement(name = "JWT"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Task status updated successfully"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "Task not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "200", description = "Task successfully updated",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "message": "task successfully updated",
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Task validation failed",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 401,
+                                              "error": "Bad Request",
+                                              "message": {
+                                              "title": "title is required"
+                                              },
+                                              "path": "/api/tasks/2"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "404", description = "Not Found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "",
+                                              "path": "/api/tasks/2"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/tasks"
+                                            }
+                                            """
+                            )))
             }
     )
     @PatchMapping("/{id}/status")
@@ -407,6 +445,15 @@ import java.util.UUID;
         public ResponseEntity<String> deleteTaskById (@RequestParam UUID id){
             taskService.deleteTask(id);
             return ResponseEntity.ok("Task deleted successfully");
+        }
+
+        @PutMapping
+        public ResponseEntity<TaskResponseDto> updateTaskDetails(@RequestParam UUID taskId,
+                                                                 @RequestBody UpdateTaskDetailsRequest request,
+                                                                 @RequestParam String email) {
+
+        TaskResponseDto updatedTask = taskService.updateTaskDetailsById(taskId, request, email);
+        return ResponseEntity.ok(updatedTask);
         }
     }
 

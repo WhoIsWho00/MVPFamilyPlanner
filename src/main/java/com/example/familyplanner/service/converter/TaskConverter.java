@@ -1,7 +1,7 @@
 package com.example.familyplanner.service.converter;
 
-import com.example.familyplanner.dto.responses.TaskResponseDto;
-import com.example.familyplanner.dto.responses.TaskResponseInCalendarDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseDto;
+import com.example.familyplanner.dto.responses.task.TaskResponseInCalendarDto;
 import com.example.familyplanner.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

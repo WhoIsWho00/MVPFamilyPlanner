@@ -1,11 +1,15 @@
 package com.example.familyplanner.controller;
 
 import com.example.familyplanner.Security.JWT.JwtCore;
-import com.example.familyplanner.dto.requests.LoginRequest;
-import com.example.familyplanner.dto.requests.PasswordResetRequest;
-import com.example.familyplanner.dto.requests.RegistrationRequest;
-import com.example.familyplanner.dto.requests.ResetPasswordRequest;
+import com.example.familyplanner.dto.requests.signInUp.LoginRequest;
+import com.example.familyplanner.dto.requests.password.PasswordResetRequest;
+import com.example.familyplanner.dto.requests.signInUp.RegistrationRequest;
+import com.example.familyplanner.dto.requests.password.ResetPasswordRequest;
 import com.example.familyplanner.dto.responses.*;
+import com.example.familyplanner.dto.responses.password.PasswordResetRequestResponseDto;
+import com.example.familyplanner.dto.responses.password.PasswordResetResponseDto;
+import com.example.familyplanner.dto.responses.signInUp.AuthResponseDto;
+import com.example.familyplanner.dto.responses.signInUp.RegisterResponseDto;
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.PasswordResetService;
 import com.example.familyplanner.service.RegisterUserService;
@@ -331,5 +335,11 @@ public class SecurityController {
                 .build();
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> handleInvalidAuthRequest() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("The endpoint you are trying to reach does not exist.");
     }
 }
