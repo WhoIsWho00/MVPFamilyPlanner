@@ -43,14 +43,12 @@ public class RegistrationRequest {
         @Schema(description = "User's chosen avatar identifier", example = "avatar1", required = true)
         @Pattern(regexp = "^avatar[1-6]$", message = "Invalid avatar ID. Must be between avatar1 and avatar6")
         @Column(name = "avatar_id")
-        @NotBlank
         private String avatarId;
 
         @NotNull(message = "Age must not be empty")
         @Min(value = 5, message = "Age must be at least 5")
         @Max(value = 100, message = "Age must not exceed 100")
         @Schema(description = "User's age", example = "25", minimum = "5", maximum = "100")
-        @NotNull
         private Integer age;
     }
 

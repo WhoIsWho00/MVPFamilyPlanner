@@ -10,6 +10,7 @@ import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.PasswordResetService;
 import com.example.familyplanner.service.RegisterUserService;
 import com.example.familyplanner.service.exception.NotFoundException;
+import com.example.familyplanner.service.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -23,8 +24,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -44,24 +50,24 @@ public class SecurityController {
     @Operation(
             summary = "Authenticate user",
             description = "Authenticates user and returns JWT token along with user info",
-    responses = {@ApiResponse(responseCode = "200", description = "Successful login",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                    value = """
-                                            {
-                                              "token": "jwt-token-string",
-                                              "user": {
-                                                "id": 1,
-                                                "username": "john_doe",
-                                                "email": "john@example.com"
-                                              },
-                                              "email": "john@example.com",
-                                              "message": "Login successful"
-                                            }
-                                            """
-            ))),
-            @ApiResponse(responseCode = "400", description = "Invalid request (missing email or password)",
+            responses = {@ApiResponse(responseCode = "200", description = "Successful login",
                     content = @Content(mediaType = "application/json", examples = @ExampleObject(
                             value = """
+                                    {
+                                      "token": "jwt-token-string",
+                                      "user": {
+                                        "id": 1,
+                                        "username": "john_doe",
+                                        "email": "john@example.com"
+                                      },
+                                      "email": "john@example.com",
+                                      "message": "Login successful"
+                                    }
+                                    """
+                    ))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request (missing email or password)",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 400,
@@ -70,10 +76,10 @@ public class SecurityController {
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
-                    ))),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials",
-                    content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                            value = """
+                            ))),
+                    @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 401,
@@ -82,10 +88,23 @@ public class SecurityController {
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
-                    ))),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                            value = """
+                            ))),
+
+                    @ApiResponse(responseCode = "404", description = "User not found",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "User not found.",
+                                              "path": "/api/auth/sign-in"
+                                            }
+                                            """
+                            ))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 500,
@@ -94,31 +113,48 @@ public class SecurityController {
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
-                    )))})
-
-  
-        public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+                            )))})
 
 
-        String jwt = jwtCore.createToken(loginRequest.getEmail());
+    public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
+            // Спочатку перевіряємо, чи існує користувач
+            boolean userExists = findUserService.existsByEmail(loginRequest.getEmail());
 
+            if (!userExists) {
 
-        UserResponseDto userDto = findUserService.findUserByEmail(loginRequest.getEmail());
+                throw new NotFoundException("User not found");
+            }
 
+            // Тільки якщо користувач існує, намагаємося аутентифікувати
+            try {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        AuthResponseDto responseDto = AuthResponseDto.builder()
-                .token(jwt)
-                .user(userDto)
-                .email(loginRequest.getEmail())
-                .message("Login successful")
-                .build();
+                String jwt = jwtCore.createToken(loginRequest.getEmail());
+                UserResponseDto userDto = findUserService.findUserByEmail(loginRequest.getEmail());
 
-        return ResponseEntity.ok(responseDto);
+                AuthResponseDto responseDto = AuthResponseDto.builder()
+                        .token(jwt)
+                        .user(userDto)
+                        .email(loginRequest.getEmail())
+                        .message("Login successful")
+                        .build();
+
+                return ResponseEntity.ok(responseDto);
+            } catch (AuthenticationException e) {
+                // Викидаємо ValidationException для неправильного пароля
+                throw new ValidationException("Invalid email or password");
+            }
+        } catch (NotFoundException | ValidationException e) {
+
+            throw e;
+        } catch (Exception e) {
+
+            throw new NullPointerException("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     @PostMapping("/sign-up")
@@ -128,17 +164,17 @@ public class SecurityController {
             responses = {@ApiResponse(responseCode = "201", description = "User successfully registered",
                     content = @Content(mediaType = "application/json", examples = @ExampleObject(
                             value = """
-                                            {
-                                              "user": {
-                                                "id": 2,
-                                                "username": "new_user",
-                                                "email": "new_user@example.com"
-                                              },
-                                              "token": "jwt-token-string",
-                                              "message": "User successfully registered",
-                                              "status": "success"
-                                            }
-                                            """
+                                    {
+                                      "user": {
+                                        "id": 2,
+                                        "username": "new_user",
+                                        "email": "new_user@example.com"
+                                      },
+                                      "token": "jwt-token-string",
+                                      "message": "User successfully registered",
+                                      "status": "success"
+                                    }
+                                    """
                     ))),
                     @ApiResponse(responseCode = "400", description = "User already exists or validation failed",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
@@ -192,7 +228,7 @@ public class SecurityController {
                                             """
                             )))}
     )
-  
+
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
 
         UserResponseDto newUser = registerUserService.createNewUser(request, httpRequest);
@@ -216,46 +252,46 @@ public class SecurityController {
             responses = {@ApiResponse(responseCode = "200", description = "Password reset request processed",
                     content = @Content(mediaType = "application/json", examples = @ExampleObject(
                             value = """
-                                        {
-                                          "message": "If your email is registered, a password reset code has been sent."
-                                        }
-                                        """
+                                    {
+                                      "message": "If your email is registered, a password reset code has been sent."
+                                    }
+                                    """
                     ))),
                     @ApiResponse(responseCode = "400", description = "Invalid email format",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 400,
-                                          "error": "Bad Request",
-                                          "message": "Invalid email format.",
-                                          "path": "/api/auth/forgot-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": "Invalid email format.",
+                                              "path": "/api/auth/forgot-password"
+                                            }
+                                            """
                             ))),
                     @ApiResponse(responseCode = "403", description = "Forbidden (access denied)",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 403,
-                                          "error": "Forbidden",
-                                          "message": "Access denied. You do not have permission to perform this action.",
-                                          "path": "/api/auth/forgot-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 403,
+                                              "error": "Forbidden",
+                                              "message": "Access denied. You do not have permission to perform this action.",
+                                              "path": "/api/auth/forgot-password"
+                                            }
+                                            """
                             ))),
                     @ApiResponse(responseCode = "500", description = "Internal server error",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 500,
-                                          "error": "Internal Server Error",
-                                          "message": "An unexpected error occurred.",
-                                          "path": "/api/auth/forgot-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/forgot-password"
+                                            }
+                                            """
                             )))}
     )
     public ResponseEntity<PasswordResetRequestResponseDto> forgotPassword(@Valid @RequestBody PasswordResetRequest request) {
@@ -278,48 +314,48 @@ public class SecurityController {
             description = "Resets password using the provided token and new password",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Password reset successfully",
-                    content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                            value = """
-                                        {
-                                          "message": "Your password has been reset successfully"
-                                        }
-                                        """
-                    ))),
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "message": "Your password has been reset successfully"
+                                            }
+                                            """
+                            ))),
                     @ApiResponse(responseCode = "400", description = "Invalid token or password mismatch",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 400,
-                                          "error": "Bad Request",
-                                          "message": "Invalid or expired reset token.",
-                                          "path": "/api/auth/reset-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "message": "Invalid or expired reset token.",
+                                              "path": "/api/auth/reset-password"
+                                            }
+                                            """
                             ))),
                     @ApiResponse(responseCode = "403", description = "Forbidden (token does not belong to user)",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 403,
-                                          "error": "Forbidden",
-                                          "message": "Reset token is not associated with your account.",
-                                          "path": "/api/auth/reset-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 403,
+                                              "error": "Forbidden",
+                                              "message": "Reset token is not associated with your account.",
+                                              "path": "/api/auth/reset-password"
+                                            }
+                                            """
                             ))),
                     @ApiResponse(responseCode = "500", description = "Internal server error",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
-                                        {
-                                          "timestamp": "2025-03-25T16:26:19.597Z",
-                                          "status": 500,
-                                          "error": "Internal Server Error",
-                                          "message": "An unexpected error occurred.",
-                                          "path": "/api/auth/reset-password"
-                                        }
-                                        """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "message": "An unexpected error occurred.",
+                                              "path": "/api/auth/reset-password"
+                                            }
+                                            """
                             )))}
     )
     public ResponseEntity<PasswordResetResponseDto> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
