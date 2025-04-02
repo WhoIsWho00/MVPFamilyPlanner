@@ -1,6 +1,6 @@
 package com.example.familyplanner.dto.requests.task;
 
-import com.example.familyplanner.entity.TaskStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,10 +14,10 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Request model for task details")
-public class TaskRequest {
+@Schema(description = "Request model for update task details")
+public class UpdateTaskDetailsRequest {
     @Schema(description = "Title of the task", example = "Buy groceries")
-    @Size(min = 10, max = 30)
+    @Size(min = 10, max = 20)
     @NotBlank(message = "Title is required")
     private String title;
 
@@ -27,13 +27,9 @@ public class TaskRequest {
 
     @Schema(description = "Due date for the task in format YYYY-MM-DD", example = "2025-03-31")
     @NotNull(message = "Due date is required")
-    //время только в виде даты приходит. Без времени
     private LocalDate dueDate;
 
-    @Schema(description = "Task status", example = "NEW")
-    private TaskStatus status;
 
-    @Schema(description = "Task priority (1-5, where 5 is highest)", example = "3")
-    private Integer priority;
+
 
 }

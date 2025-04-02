@@ -110,4 +110,9 @@ public class ExceptionHandler {
                 .header("Allow", "POST")
                 .body(response);
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
 }
