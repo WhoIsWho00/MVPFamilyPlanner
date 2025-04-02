@@ -258,7 +258,7 @@ import java.util.UUID;
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-
+                                                "message": "Task successfully created"
                                             }
                                             """
                             ))),
