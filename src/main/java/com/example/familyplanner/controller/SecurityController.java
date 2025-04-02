@@ -161,7 +161,7 @@ public class SecurityController {
         }
     }
 
-    @PostMapping("/sign-up")
+
     @Operation(
             summary = "Register new user",
             description = "Registers a new user and returns JWT token along with user info",
@@ -207,6 +207,18 @@ public class SecurityController {
                                             }
                                             """
                             ))),
+                    @ApiResponse(responseCode = "409", description = "Data validation conflict",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 409,
+                                              "error": "Conflict",
+                                              "message": "email already exists or email is invalid.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
                     @ApiResponse(responseCode = "429", description = "Too many request",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
@@ -233,7 +245,7 @@ public class SecurityController {
                             )))
             }
     )
-
+    @PostMapping("/sign-up")
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
 
         UserResponseDto newUser = registerUserService.createNewUser(request, httpRequest);
