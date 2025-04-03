@@ -42,7 +42,7 @@ import java.util.UUID;
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-                                                "message": "tasks successfully retrieved",
+                                                "message": "Tasks successfully retrieved"
                                             }
                                             """
                             ))),
@@ -192,12 +192,7 @@ import java.util.UUID;
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-                                              "task": {
-                                                "id": 2,
-                                                "title": "new_task",
-                                              },
-                                              "message": "Task successfully created",
-                                              "status": "success"
+                                              "message": "Task successfully found"
                                             }
                                             """
                             ))),
