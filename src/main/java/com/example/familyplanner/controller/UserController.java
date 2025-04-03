@@ -41,7 +41,7 @@ public class UserController {
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                                {
-                                                    "message": "User successfully deleted",
+                                                  "message": "User successfully deleted"
                                                 }
                                                """
                             ))),
