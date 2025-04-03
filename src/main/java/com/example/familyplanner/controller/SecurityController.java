@@ -13,6 +13,7 @@ import com.example.familyplanner.dto.responses.signInUp.RegisterResponseDto;
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.PasswordResetService;
 import com.example.familyplanner.service.RegisterUserService;
+import com.example.familyplanner.service.exception.NonExistingEmailException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import com.example.familyplanner.service.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -93,14 +94,14 @@ public class SecurityController {
                                             """
                             ))),
 
-                    @ApiResponse(responseCode = "404", description = "User not found",
+                    @ApiResponse(responseCode = "404", description = "Page not found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 404,
                                               "error": "Not Found",
-                                              "message": "User not found.",
+                                              "message": "Page not found.",
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
@@ -126,8 +127,7 @@ public class SecurityController {
             boolean userExists = findUserService.existsByEmail(loginRequest.getEmail());
 
             if (!userExists) {
-
-                throw new NotFoundException("User not found");
+                throw new NonExistingEmailException("Email not found");
             }
 
             // Тільки якщо користувач існує, намагаємося аутентифікувати
@@ -152,7 +152,7 @@ public class SecurityController {
                 // Викидаємо ValidationException для неправильного пароля
                 throw new ValidationException("Invalid email or password");
             }
-        } catch (NotFoundException | ValidationException e) {
+        } catch (NonExistingEmailException | ValidationException e) {
 
             throw e;
         } catch (Exception e) {
