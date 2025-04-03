@@ -325,7 +325,7 @@ import java.util.UUID;
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
-                                              "message": "task successfully updated",
+                                                "message": "Task successfully updated"
                                             }
                                             """
                             ))),
@@ -386,10 +386,10 @@ import java.util.UUID;
                        @ApiResponse(responseCode = "200", description = "Successful operation",
                                content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                        value = """
-                                               {
-                                                    "message": "Task successfully deleted",
-                                                }
-                                               """
+                                            {
+                                                "message": "Task successfully deleted"
+                                            }
+                                            """
                               ))),
                         @ApiResponse(responseCode = "401", description = "Unauthorized (authentication required)",
                                 content = @Content(mediaType = "application/json", examples = @ExampleObject(
@@ -456,7 +456,7 @@ import java.util.UUID;
                 content = @Content(mediaType = "application/json", examples = @ExampleObject(
                         value = """
                                 {
-                                 "message": "Task successfully updated",
+                                 "message": "Task successfully updated"
                                 }
                                 """
                 ))),
