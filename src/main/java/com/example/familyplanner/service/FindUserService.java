@@ -4,6 +4,7 @@ import com.example.familyplanner.dto.responses.UserResponseDto;
 import com.example.familyplanner.entity.User;
 import com.example.familyplanner.repository.UserRepository;
 import com.example.familyplanner.service.converter.UserConverter;
+import com.example.familyplanner.service.exception.NonExistingEmailException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +35,7 @@ public class FindUserService {
             UserResponseDto response = converter.createDtoFromUser(userOptional.get());
             return response;
         } else {
-            throw new NotFoundException("Manager with email " + email + " not found");
+            throw new NotFoundException("User with email " + email + " not found");
         }
     }
 
@@ -45,7 +46,7 @@ public class FindUserService {
     public boolean existsByEmail(String email) {
         try {
             userRepository.findByEmail(email)
-                    .orElseThrow(() -> new NotFoundException("User not found"));
+                    .orElseThrow(() -> new NonExistingEmailException("User not found"));
             return true;
         } catch (NotFoundException e) {
             return false;

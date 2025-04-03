@@ -54,7 +54,6 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler({
             NotFoundException.class,
             AlreadyExistException.class,
-            ValidationException.class,
             NullPointerException.class,
             IllegalArgumentException.class
     })
@@ -110,4 +109,18 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(ValidationException.class)
+    public ResponseEntity<String> handleValidationException(ValidationException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(NonExistingEmailException.class)
+    public ResponseEntity<String> NonExistingEmailException(NonExistingEmailException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 }

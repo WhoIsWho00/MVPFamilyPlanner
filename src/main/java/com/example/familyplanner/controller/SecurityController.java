@@ -13,6 +13,7 @@ import com.example.familyplanner.dto.responses.signInUp.RegisterResponseDto;
 import com.example.familyplanner.service.FindUserService;
 import com.example.familyplanner.service.PasswordResetService;
 import com.example.familyplanner.service.RegisterUserService;
+import com.example.familyplanner.service.exception.NonExistingEmailException;
 import com.example.familyplanner.service.exception.NotFoundException;
 import com.example.familyplanner.service.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +44,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityController {
 
 
-    //Возрващать DTO
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final RegisterUserService registerUserService;
@@ -94,14 +94,14 @@ public class SecurityController {
                                             """
                             ))),
 
-                    @ApiResponse(responseCode = "404", description = "User not found",
+                    @ApiResponse(responseCode = "404", description = "Page not found",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
                                             {
                                               "timestamp": "2025-03-25T16:26:19.597Z",
                                               "status": 404,
                                               "error": "Not Found",
-                                              "message": "User not found.",
+                                              "message": "Page not found.",
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
@@ -117,18 +117,17 @@ public class SecurityController {
                                               "path": "/api/auth/sign-in"
                                             }
                                             """
-                            )))})
-
-        public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+                            )))
+                    }
+            )
+    @PostMapping("/sign-in")
     public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             // Спочатку перевіряємо, чи існує користувач
             boolean userExists = findUserService.existsByEmail(loginRequest.getEmail());
 
             if (!userExists) {
-
-                throw new NotFoundException("User not found");
+                throw new NonExistingEmailException("Email not found");
             }
 
             // Тільки якщо користувач існує, намагаємося аутентифікувати
@@ -153,7 +152,7 @@ public class SecurityController {
                 // Викидаємо ValidationException для неправильного пароля
                 throw new ValidationException("Invalid email or password");
             }
-        } catch (NotFoundException | ValidationException e) {
+        } catch (NonExistingEmailException | ValidationException e) {
 
             throw e;
         } catch (Exception e) {
@@ -162,7 +161,7 @@ public class SecurityController {
         }
     }
 
-    @PostMapping("/sign-up")
+
     @Operation(
             summary = "Register new user",
             description = "Registers a new user and returns JWT token along with user info",
@@ -208,6 +207,18 @@ public class SecurityController {
                                             }
                                             """
                             ))),
+                    @ApiResponse(responseCode = "409", description = "Data validation conflict",
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "timestamp": "2025-03-25T16:26:19.597Z",
+                                              "status": 409,
+                                              "error": "Conflict",
+                                              "message": "email already exists or email is invalid.",
+                                              "path": "/api/auth/sign-up"
+                                            }
+                                            """
+                            ))),
                     @ApiResponse(responseCode = "429", description = "Too many request",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject(
                                     value = """
@@ -231,9 +242,10 @@ public class SecurityController {
                                               "path": "/api/auth/sign-up"
                                             }
                                             """
-                            )))}
+                            )))
+            }
     )
-
+    @PostMapping("/sign-up")
     public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
 
         UserResponseDto newUser = registerUserService.createNewUser(request, httpRequest);
@@ -297,7 +309,8 @@ public class SecurityController {
                                               "path": "/api/auth/forgot-password"
                                             }
                                             """
-                            )))}
+                            )))
+            }
     )
     public ResponseEntity<PasswordResetRequestResponseDto> forgotPassword(@Valid @RequestBody PasswordResetRequest request) {
         try {
