@@ -154,4 +154,25 @@ public class UserRepositoryTest {
         assertThat(found).isPresent();
         assertThat(found.get().getUsername()).isEqualTo("newuser");
     }
+
+    @Test
+    void testFindByEmail() {
+        // ...создание и сохранение тестового пользователя...
+        Optional<User> user = userRepository.findByEmail("test@example.com");
+        assertThat(user).isPresent();
+    }
+
+    @Test
+    void testFindByUsername() {
+        // ...создание и сохранение тестового пользователя...
+        Optional<User> user = userRepository.findByUsername("testuser");
+        assertThat(user).isPresent();
+    }
+
+    @Test
+    void testFindByRole() {
+        // ...создание и сохранение тестовых пользователей с разными ролями...
+        List<User> users = userRepository.findByRole(new Role("ROLE_USER"));
+        assertThat(users).isNotEmpty();
+    }
 }

@@ -14,13 +14,23 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-       public void sendPasswordResetEmail(String to, String code) {
+    public void sendPasswordResetEmail(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(to);
         message.setSubject("Family Planner - Password Reset Code");
         message.setText("Your password reset code is: " + code +
                 "\n\nThis code will expire in 5 minutes. If you did not request a password reset, please ignore this message.");
+
+        mailSender.send(message);
+    }
+
+    public void sendWelcomeEmail(String to) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(to);
+        message.setSubject("Welcome to Family Planner!");
+        message.setText("Thank you for joining Family Planner. We are excited to have you on board!");
 
         mailSender.send(message);
     }

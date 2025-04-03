@@ -186,4 +186,44 @@ class RegisterUserServiceTest {
         verify(validationService).userExists("updated@example.com");
         verify(userRepository, never()).save(any());
     }
+
+    @Test
+    void testCreateNewUser_Success() {
+        RegistrationRequest request = new RegistrationRequest();
+        request.setEmail("test@example.com");
+
+        when(validationService.userExists(request.getEmail())).thenReturn(false);
+        when(converter.createUserFromDto(request)).thenReturn(newUser);
+        when(userRepository.save(newUser)).thenReturn(newUser);
+        when(converter.createDtoFromUser(newUser)).thenReturn(new UserResponseDto());
+
+        UserResponseDto response = registerUserService.createNewUser(request, mock(HttpServletRequest.class));
+
+        assertNotNull(response);
+        verify(userRepository, times(1)).save(newUser);
+    }
+
+    @Test
+    void testUpdateUserProfile_Success() {
+        UpdateProfileRequest request = new UpdateProfileRequest();
+        request.setEmail("new@example.com");
+
+        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.of(newUser));
+        when(userRepository.save(newUser)).thenReturn(newUser);
+        when(converter.createDtoFromUser(newUser)).thenReturn(new UserResponseDto());
+
+        UserResponseDto response = registerUserService.updateUserProfile(newUser.getEmail(), request);
+
+        assertNotNull(response);
+        assertEquals("new@example.com", newUser.getEmail());
+        verify(userRepository, times(1)).save(newUser);
+    }
+
+    @Test
+    void testUpdateUserProfile_UserNotFound() {
+        UpdateProfileRequest request = new UpdateProfileRequest();
+        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> registerUserService.updateUserProfile(newUser.getEmail(), request));
+    }
 }

@@ -18,4 +18,8 @@ public class ValidationService {
         return existUser.isPresent();
     }
 
+    public boolean isPasswordValid(String password) {
+        return password != null && password.length() >= 8;
+    }
+
 }
