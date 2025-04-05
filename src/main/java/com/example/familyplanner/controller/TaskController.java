@@ -100,8 +100,15 @@ import java.util.UUID;
     )
         @GetMapping("/calendar")
         public ResponseEntity<List<TaskResponseInCalendarDto>> getTasksByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                                                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-            List<TaskResponseInCalendarDto> tasksBetweenDates= taskService.getTasksBetweenDates(startDate, endDate);
+                                                                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                                                                                   Principal principal) {
+
+        if(principal == null)
+        {  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();}
+
+        String email = principal.getName();
+
+        List<TaskResponseInCalendarDto> tasksBetweenDates= taskService.getTasksBetweenDates(startDate, endDate, email);
             return ResponseEntity.ok(tasksBetweenDates);
 
         }
